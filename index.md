@@ -1,1 +1,1 @@
-Thinking Since Childhood
+* A child’s thoughts, assignments, exercises, notes *
