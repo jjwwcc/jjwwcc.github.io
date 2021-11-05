@@ -1,2 +1,1 @@
-Rocky's ideas since childhood
-:sparkles:
+## Rocky's ideas since childhood
