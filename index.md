@@ -1,1 +1,2 @@
-:collision: :collision:
+Rocky's ideas since childhood
+:sparkles:
