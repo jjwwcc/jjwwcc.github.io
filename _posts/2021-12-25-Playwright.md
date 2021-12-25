@@ -1,10 +1,4 @@
 2020 年初，微软发布了一个自动化测试工具——Playwright，不少人称它是小白神器。可惜猿妹最近才知道原来它这么强大。
-
-
-图片
-
-
-
 Playwright是针对Python语言的纯自动化工具，它可以通过单个API自动执行Chromium，Firefox 和 WebKit 浏览器，连代码都不用写，就能实现自动化功能。
 
 Playwright具有以下功能特性：
