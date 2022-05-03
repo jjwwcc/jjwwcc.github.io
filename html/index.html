@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="//dweet.io/client/dweet.io.min.js"></script>
+    <title>Message Me</title>
+</head>
+
+<body>
+    <!-- chat conversation -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Chat Conversation</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="chat-conversation">
+                                    <div class="conversation-text">
+                                        <div class="ctext-wrap"></div>
+                                    </div>
+                                    <div class="conversation-text">
+                                        <div class="ctext-wrap pull-right">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- chat form -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="chat-form">
+                    <form action="#" method="post">
+                        <div class="form-group">
+                            <label for="message">Message:</label>
+                            <textarea class="form-control" rows="5" id="message" name="message"
+                                placeholder="Enter your message"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-default">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // submit form to webhook
+        $('form').submit(function (e) {
+            e.preventDefault();
+            // get the form data
+            var formData = {
+                'text': $('#message').val()
+            };
+            // process the form
+            $.ajax({
+                type: 'POST',
+                url: 'https://chat.googleapis.com/v1/spaces/AAAAQ9PsXpo/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=JQvrNKdY28LVsrChRQu1JCGUBTLl-p_BEUakCs2Fl0U%3D',
+                // header
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                // body
+                data: JSON.stringify(formData),
+                success: function (data) {
+                    // 增加一条信息， 将 div.ctext-wrap 的内容更改为 data.text
+                    $('.ctext-wrap.pull-right').append('<p>' + data.text + '</p>');
+                    console.log(data);
+                }
+            });
+        });
+
+        // listen dweet.io
+        dweetio.listen_for('jia', function (dweet) {
+            // 增加一条信息， 将 div.ctext-wrap 的内容更改为 dweet.content.text
+            console.log(dweet);
+            $('.ctext-wrap').append('<p>' + dweet.with.content.hello + '</p>');
+        });
+
+
+    </script>
+
+
+
+</body>
+
+</html>
