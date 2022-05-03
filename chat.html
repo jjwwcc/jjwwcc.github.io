@@ -29,7 +29,7 @@
                             <div class="col-md-12">
                                 <div class="chat-conversation">
                                     <div class="conversation-text">
-                                        <div class="ctext-wrap"></div>
+                                        <div class="ctext-wrap" id="dweetMessage"></div>
                                     </div>
                                     <div class="conversation-text">
                                         <div class="ctext-wrap pull-right">
@@ -68,7 +68,7 @@
             e.preventDefault();
             // get the form data
             var formData = {
-                'text': $('#message').val()
+                'text': $('#message').val() + '<https://jjwwcc.github.io/chat.html|Reply it Click Here>'
             };
             // process the form
             $.ajax({
@@ -92,7 +92,7 @@
         dweetio.listen_for('jia', function (dweet) {
             // 增加一条信息， 将 div.ctext-wrap 的内容更改为 dweet.content.text
             console.log(dweet);
-            $('.ctext-wrap').append('<p>' + dweet.content.hello + '</p>');
+            $('#dweetMessage').append('<p>' + dweet.content.hello + '</p>');
         });
 
 
