@@ -105,16 +105,19 @@
             // 获取当前ip
             $.getJSON('https://api.ipify.org?format=jsonp&callback=?', function (data) {
                 // 增加一条信息， 将 div.ctext-wrap 的内容更改为 dweet.content.text
-                $('.ctext-wrap').append('<p>' + dweet.content.text + '<br>' + data.ip + '</p>');
+                $('#dweetMessage').append('<p>' + dweet.content.hello + '<br>' + data.ip + '</p>');
             });
             // $('#dweetMessage').append('<p>' + dweet.content.hello + '</p>');
-            // chrome 桌面通知
-            if (Notification.permission === "granted") {
-                var notification = new Notification('Get Message', {
-                    body: dweet.content.hello,
-                    icon: 'https://cdn-teams-slug.flaticon.com/smashicons.jpg'
-                });
-            }
+            Notification.requestPermission(function (permission) {
+                // 如果用户同意，就发送通知
+                if (permission === "granted") {
+                    var notification = new Notification('Message', {
+                        body: dweet.content.hello,
+                        icon: 'https://cdn-icons-png.flaticon.com/512/149/149004.png'
+                    });
+                }
+            });
+
         });
 
 
