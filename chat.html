@@ -72,7 +72,7 @@
             };
             // process the form
             // Send a dweet
-            dweetio.dweet_for('jia', {'hello': $('#message').val()}, function (err, dweet) {
+            dweetio.dweet_for('jia', { 'hello': $('#message').val() }, function (err, dweet) {
                 if (err) {
                     console.log(err);
                 } else {
@@ -99,8 +99,22 @@
         // listen dweet.io
         dweetio.listen_for('jia', function (dweet) {
             // 增加一条信息， 将 div.ctext-wrap 的内容更改为 dweet.content.text
-            console.log(dweet);
-            $('#dweetMessage').append('<p>' + dweet.content.hello + '</p>');
+            // 获取当前hhmmss
+            var date = new Date();
+            var hhmmss = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+            // 获取当前ip
+            $.getJSON('https://api.ipify.org?format=jsonp&callback=?', function (data) {
+                // 增加一条信息， 将 div.ctext-wrap 的内容更改为 dweet.content.text
+                $('.ctext-wrap').append('<p>' + dweet.content.text + '<br>' + data.ip + '</p>');
+            });
+            // $('#dweetMessage').append('<p>' + dweet.content.hello + '</p>');
+            // chrome 桌面通知
+            if (Notification.permission === "granted") {
+                var notification = new Notification('Get Message', {
+                    body: dweet.content.hello,
+                    icon: 'https://cdn-teams-slug.flaticon.com/smashicons.jpg'
+                });
+            }
         });
 
 
