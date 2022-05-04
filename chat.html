@@ -68,7 +68,7 @@
             e.preventDefault();
             // get the form data
             var formData = {
-                'text': $('#message').val() + '<https://jjwwcc.github.io/chat.html|Reply it Click Here>'
+                'text': $('#message').val() + '  <https://jjwwcc.github.io/chat.html|Reply it Click Here>'
             };
             // process the form
             // Send a dweet
@@ -103,10 +103,8 @@
             var date = new Date();
             var hhmmss = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
             // 获取当前ip
-            $.getJSON('https://api.ipify.org?format=jsonp&callback=?', function (data) {
-                // 增加一条信息， 将 div.ctext-wrap 的内容更改为 dweet.content.text
-                $('#dweetMessage').append('<p>' + dweet.content.hello + '<br>' + data.ip + '</p>');
-            });
+            // 增加一条信息， 将 div.ctext-wrap 的内容更改为 dweet.content.text
+            $('#dweetMessage').append('<p>' + dweet.content.hello + '  ' + hhmmss + '</p>');
             // $('#dweetMessage').append('<p>' + dweet.content.hello + '</p>');
             Notification.requestPermission(function (permission) {
                 // 如果用户同意，就发送通知
