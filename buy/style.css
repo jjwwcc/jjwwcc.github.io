@@ -18,5 +18,14 @@ button {
     background-color: rgba(124, 203, 197, 0.326);
     margin: 10px;
     border: 0;
-    border-radius: 10px;
+    border-radius: 15px;
+}
+
+h1 {
+    margin: 10px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    font-size: 30px;
+    color: rgb(24, 206, 142);
+    text-align: center;
 }
