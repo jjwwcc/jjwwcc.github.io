@@ -34,7 +34,12 @@
                                 <div class="row">
                                     <div class="col-md-8">
                                         <h4>Product Title</h4>
-                                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos!</p>
+                                        <p>
+                                            <button>OFFER</button>
+                                            <button>WANT</button>
+                                            <button>BUY</button>
+                                            <button>COMMENT</button>
+                                        </p>
                                     </div>
                                     <div class="col-md-4">
                                         <h4>$100.00</h4>
@@ -101,6 +106,22 @@
                     var p = $("<p>").text(value.description);
                     // append p tag to col-md-8 tag
                     col_md_8.append(p);
+                    // create button tag
+                    var button_1 = $("<button>").text("OFFER");
+                    // append button tag to col-md-8 tag
+                    col_md_8.append(button_1);
+                    // create button tag
+                    var button_2 = $("<button>").text("WANT");
+                    // append button tag to col-md-8 tag
+                    col_md_8.append(button_2);
+                    // create button tag
+                    var button_3 = $("<button>").text("BUY");
+                    // append button tag to col-md-8 tag
+                    col_md_8.append(button_3);
+                    // create button tag
+                    var button_4 = $("<button>").text("COMMENT");
+                    // append button tag to col-md-8 tag
+                    col_md_8.append(button_4);
                     // append col-md-8 tag to row-2 tag
                     row_2.append(col_md_8);
                     // create col-md-4 tag
