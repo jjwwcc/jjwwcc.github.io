@@ -2,3 +2,7 @@ img {
     border: 0;
     width: 100%;
 }
+
+a {
+    padding: 15px;
+}
