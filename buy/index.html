@@ -6,120 +6,65 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+    <!-- custom css -->
+    <link rel="stylesheet" href="style.css">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <!-- custom css -->
-    <link rel="stylesheet" href="style.css">
-    <!-- jquery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <h1>Product List From China</h1>
+    <div class="container mt-3">
+        <!-- h1 -->
+        <div class="d-flex justify-content-around bg-light mb-3">
+            <div class="p-2 bg-light">
+                <h4 id="date-0"></h4>
             </div>
-            <div class="col-md-12">
-                <!-- ul label show Title Picture Price and shipping -->
-                <ul class="list-group">
-                    <!-- <li class="list-group-item">
-                        <div class="row">
-                            <div class="col-md-2">
-                                <img src="https://via.placeholder.com/150" alt="" width="100px">
-                            </div>
-                            <div class="col-md-10">
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <h4>Product Title</h4>
-                                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos!</p>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h4>$100.00</h4>
-                                        <p>Free Shipping</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </li> -->
-                </ul>
+            <div class="p-2 bg-light">
+                <h4 id="link-0">
+                </h4>
             </div>
         </div>
-        <!-- read json file and show them -->
-        <script>
-            // load json file by jquery
-            $.getJSON("../json/sold_" + new Date().toISOString().slice(0,10) + ".json", function (data) {
-                // console.log(data);
-                // loop through json file
-                $.each(data, function (key, value) {
+    </div>
+    <script>
+        // var today =  new Date().toISOString().slice(0,10);
+        // document.getElementById("date-0").innerHTML = today;
 
-                    // create li tag
-                    var li = $("<li>").addClass("list-group-item");
-                    // create row tag
-                    var row = $("<div>").addClass("row");
-                    // create col-md-2 tag
-                    var col_md_2 = $("<div>").addClass("col-md-4");
-                    // create img tag
-                    var img = $("<img>").attr("src", value.url);
-                    // append img tag to col-md-2 tag
-                    col_md_2.append(img);
-                    // append col-md-2 tag to row tag
-                    row.append(col_md_2);
-                    // create col-md-10 tag
-                    var col_md_10 = $("<div>").addClass("col-md-8");
-                    // create row tag
-                    var row_2 = $("<div>").addClass("row");
-                    // create col-md-8 tag
-                    var col_md_8 = $("<div>").addClass("col-md-8");
-                    // create h4 tag
-                    var h4 = $("<h5>").text(value.title);
-                    // append h4 tag to col-md-8 tag
-                    col_md_8.append(h4);
-                    // create p tag
-                    var p = $("<p>").text(value.description);
-                    // append p tag to col-md-8 tag
-                    col_md_8.append(p);
-                    // append col-md-8 tag to row-2 tag
-                    row_2.append(col_md_8);
-                    // create col-md-4 tag
-                    var col_md_4 = $("<div>").addClass("col-md-4");
-                    // create h4 tag
-                    var h4_2 = $("<h4>").text(value.price);
-                    // append h4 tag to col-md-4 tag
-                    col_md_4.append(h4_2);
-                    // create p tag
-                    var p_2 = $("<p>").text(value.shipping);
-                    // append p tag to col-md-4 tag
-                    col_md_4.append(p_2);
-                    // append col-md-4 tag to row-2 tag
-                    row_2.append(col_md_4);
-                    // append row-2 tag to col-md-10 tag
-                    col_md_10.append(row_2);
-                    // append col-md-10 tag to row tag
-                    row.append(col_md_10);
-                    // append row tag to li tag
-                    li.append(row);
-                    // append li tag to ul tag
-                    $("ul").append(li);
+        for (var i = 1; i < 10; i++) {
+            var date_n = new Date();
+            date_n.setDate(date_n.getDate() - (i-1));
+            var date_n_str = date_n.toISOString().slice(0,10);
+            var date_h4 = document.createElement("h4");
+            date_h4.setAttribute("id", "date-" + i);
+            date_h4.innerHTML = date_n_str;
+            document.getElementById("date-" + (i-1)).after(date_h4);
 
+            var link_n = document.createElement("h4");
+            link_n.setAttribute("id", "link-" + i);
+            for (var j =1; j<6; j++) {
+                var link_n_str = "main.html?uid=" + (j-1) + "&date=" + date_n_str;
+                var link_n_a = document.createElement("a");
+                link_n_a.setAttribute("href", link_n_str);
+                link_n_a.setAttribute("target", "_blank");
+                link_n_a.setAttribute("rel", "noopener noreferrer");
+                link_n_a.innerHTML = j;
+                link_n.appendChild(link_n_a);
+            }
+            document.getElementById("link-" + (i-1)).after(link_n);            
+        }       
 
-
-
-                });
-            });
-        </script>
-
-        <!-- Optional JavaScript -->
-        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-            crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-            crossorigin="anonymous"></script>
+    </script>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>
