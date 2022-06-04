@@ -9,4 +9,14 @@ a {
 
 button {
     margin: 5px;
+    border: 2px solid #ccc;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.list-group-item {
+    background-color: rgba(124, 203, 197, 0.326);
+    margin: 10px;
+    border: 0;
+    border-radius: 10px;
 }
