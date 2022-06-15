@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- font awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- custom css -->
+    <link rel="stylesheet" href="css/style.css">
+    <title>item no machine</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="header">
+                    <h1>库存产品生成器</h1>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="content">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="item_no">请输入产品编码和数量(编码与数量之间用冒号隔开)</label>
+                                <textarea class="form-control" id="item_no" rows="30"></textarea>
+                                <!-- submit button -->
+                                <div style="margin-top: 15px;">
+                                    <button type="submit" class="btn btn-primary" onclick="javascript:saveJson()">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <!-- end of container -->
+    <!-- script to save textarea to json -->
+    <script>
+        function saveJson() {
+            var itemObj = [];
+            // get item no from textarea
+            var itemNo = $('#item_no').val();
+            // split item no into array
+            var itemNoArray = itemNo.split('\n');
+            // loop through item no array
+            for (var i = 0; i < itemNoArray.length; i++) {
+                // get item no
+                var itemNo = itemNoArray[i];
+                // remove the space from item no
+                itemNo = itemNo.replace(/\s/g, '');
+                // check if item no is empty
+                if (itemNo != '') {
+                    // get before : text as item no
+                    var itemNoBeforeColon = itemNo.split(':')[0];
+                    // get after : text as quantity
+                    var itemNoAfterColon = itemNo.split(':')[1];
+                    // add item no to item obj
+                    obj = {
+                        "item_no": itemNoBeforeColon,
+                        "quantity": itemNoAfterColon,
+                    };
+                    // push obj to itemObj
+                    itemObj.push(obj);
+                }
+            }
+            // convert item obj to json
+            var itemJson = JSON.stringify(itemObj);
+            // save item json to local storage
+            localStorage.setItem('item_no', itemJson);
+            // redirect to next page
+            window.location.href = "showList.html";
+
+            // download json file
+            // downloadJson(itemJson);
+
+        }
+
+        function downloadJson(itemJson) {
+            // 获取itemJson的blob对象
+            var blob = new Blob([itemJson], {
+                type: "application/json;charset=utf-8"
+            });
+            // 创建一个a标签
+            var a = document.createElement('a');
+            // 将blob对象转换为url对象
+            var url = URL.createObjectURL(blob);
+            // 将url对象赋值给a标签的href属性
+            a.href = url;
+            // 将文件名赋值给a标签的download属性
+            a.download = "item_no_json.json";
+            // 将a标签插入到body中
+            document.body.appendChild(a);
+            // 触发a标签的click事件
+            a.click();
+            // 删除a标签
+            document.body.removeChild(a);
+        }
+    </script>
+
+
+</body>
+
+</html>
