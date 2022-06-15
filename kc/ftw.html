@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css"
+        integrity="sha256-ECB9bbROLGm8wOoEbHcHRxlHgzGqYpDtNTgDTyDz0wg=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Barriecito|Source+Sans+Pro:200&display=swap" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <!-- jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+
+    <title>Untitled Document | Skeleton CSS</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="eight columns">
+                <h3>FTW Product (Sort by popular)</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="eight columns">
+                <div class="row">
+                    <div class="four columns">Image</div>
+                    <div class="four columns">Item Number</div>
+                    <div class="four columns">Quantity</div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <ul>
+            </ul>
+        </div>
+    </div>
+    <script>
+
+        // read json file
+        $.getJSON("item_no.json", function (data) {
+            console.log(data);
+            // loop through json data
+            // loop through json file
+            for (var i = 0; i < data.length; i++) {
+                // create li element
+                var li = document.createElement('li');
+                // create img element
+                var img = document.createElement('img');
+                // set img src to json file
+                img.src = 'https://www.frontwinner.com/spic.php?pic=' + data[i].item_no;
+                // set img alt to json file
+                img.alt = data[i].item_no;
+                // set img width to 100px
+                img.width = 100;
+                var img_column = document.createElement('div');
+                // add class to div
+                img_column.classList.add('three','columns');
+                // append img to img_column
+                img_column.appendChild(img);
+                // create p element
+                var p = document.createElement('p');
+                // set p text to json file
+                p.textContent = data[i].item_no;
+                // create a tag
+                var a = document.createElement('a');
+                a.href = 'https://www.frontwinner.com/anime/sku/' + data[i].item_no;
+                a.target = '_blank';
+                // append p to a
+                a.appendChild(p);
+                // append p to item column
+                var itemno_column = document.createElement('div');
+                itemno_column.classList.add('three','columns');
+                itemno_column.appendChild(a);
+                // create p element
+                var p = document.createElement('p');
+                // set p text to json file
+                p.textContent = data[i].quantity;
+                // append p to quantity column
+                var quantity_column = document.createElement('div');
+                quantity_column.classList.add('three','columns');
+                quantity_column.appendChild(p);
+                // append img_column to row
+                var row = document.createElement('div');
+                row.classList.add('row');
+                row.appendChild(img_column);
+                row.appendChild(itemno_column);
+                row.appendChild(quantity_column);
+                // append row to li
+                li.appendChild(row);
+                // append li to ul
+                document.querySelector('ul').appendChild(li);
+            }
+
+        });
+
+
+    </script>
+
+</body>
+
+</html>
