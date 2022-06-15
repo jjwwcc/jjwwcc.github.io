@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Title</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+</head>
+
+<body>
+    <!-- container to local products list -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="header">
+                    <h1>List</h1>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <!-- ul header -->
+            <div class="content">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p> Pictures </p>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <p > Item No </p>
+                            </div>
+                            <div class="col-md-4">
+                                <p> Quantity </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <!-- bootstrap ul for product list -->
+            <ul class="list-group">
+                <!-- <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p id="item_no"> Pictures </p>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p id="img_url"> Item No </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p id="quantiy"> Quantity </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li> -->
+            </ul>
+            <!-- button to download the json -->
+        </div>
+        <button type="button" class="btn btn-primary" id="download_json">Download JSON</button>
+    </div>
+    <!-- Optional JavaScript -->
+    <script>
+        // read localstorage
+        var localStorage = window.localStorage;
+        var itemNo = localStorage.item_no;
+        // itemNo to json
+        var itemNoJson = JSON.parse(itemNo);
+        // loop through item no json
+        for (var i = 0; i < itemNoJson.length; i++) {
+            // get item no
+            var itemNo = itemNoJson[i].item_no;
+            // get img url https://www.frontwinner.com/spic.php?pic=ANST8025
+            var imgUrl = 'https://www.frontwinner.com/spic.php?pic=' + itemNo;
+            // get quantity
+            var quantity = itemNoJson[i].quantity;
+            // create li to show the information
+            var li = '<li class="list-group-item" draggable="true"><div class="row"><div class="col-md-4"><img src="' + imgUrl + '" class="img-fluid" alt="Responsive image"></div><div class="col-md-8"><div class="row"><div class="col-md-6"><p>' + itemNo + '</p></div><div class="col-md-6"><p>' + quantity + '</p></div></div></div></div></li>';
+            // append li to ul
+            $('.list-group').append(li);
+        }
+
+        $(document).ready(function () {
+            $(".list-group").sortable({
+                revert: true,
+                placeholder: 'sortable-placeholder',
+                /*update: function (event, ui) {
+                    // Some code to prevent duplicates
+                }*/
+
+                start: function (event, ui) {
+                    /*         $(ui.item).removeClass("large-box"); */
+                    $(ui.item).addClass("small-box");
+                },
+                stop: function (event, ui) {
+                    /*      $(ui.item).addClass("large-box"); */
+                    $(ui.item).removeClass("small-box");
+
+                }
+            });
+        });
+
+        // download json
+        $('#download_json').click(function () {
+            // item array
+            var itemArray = [];
+            // 遍历ul中的li
+            $('.list-group li').each(function (index, element) {
+                // get item no
+                var itemNo = $(element).find('p:first').text();
+                // get quantity
+                var quantity = $(element).find('p:last').text();
+                // create json
+                var itemNoJson = {
+                    "item_no": itemNo,
+                    "quantity": quantity
+                };
+                // push json to array
+                itemArray.push(itemNoJson);
+            });
+            // convert array to json
+            var itemNoJson = JSON.stringify(itemArray);
+            // download json
+            downloadJson(itemNoJson);
+        });
+
+        // download json
+        function downloadJson(json) {
+            // create a link
+            var link = document.createElement('a');
+            // set the href
+            link.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(json);
+            // set the file name
+            link.download = 'item_no.json';
+            // click the link
+            link.click();
+        }
+                
+    </script>
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
