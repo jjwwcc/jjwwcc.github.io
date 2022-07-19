@@ -36,7 +36,7 @@
                             <div class="form-group">
                                 <label for="text">Words Quantity:</label>
                                 <input class="input-lg space" type="number" id="words" placeholder="Words">
-                                <button class="btn btn-lg btn-warning btn-block space" id="start">Start</button>
+                                <button class="btn btn-lg btn-warning btn-block space p-5" id="start">Start</button>
                                 <button class="btn btn-lg btn-default btn-block space" id="stop">Stop</button>
                                 <button class="btn btn-lg btn-default btn-block space" id="reset">Reset</button>
                             </div>
@@ -51,7 +51,12 @@
             var time = 0;
             var timer;
             $('#start').click(function () {
-                var words = $('#words').val();                
+                var words = $('#words').val(); 
+                // disable button
+                $('#start').attr('disabled', true);
+                // disable input and reset button
+                $('#words').attr('disabled', true);
+                $('#reset').attr('disabled', true);
                 timer = setInterval(function () {
                     time++;
                     $('#time').text(time);
@@ -60,6 +65,11 @@
                 }, 1000);
             });
             $('#stop').click(function () {
+                // enable button
+                $('#start').attr('disabled', false);
+                // enable input and reset button
+                $('#words').attr('disabled', false);
+                $('#reset').attr('disabled', false);
                 clearInterval(timer);
             });
             $('#reset').click(function () {
