@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- icon from internet -->
+    <link rel="icon"
+        href="https://www.freeiconspng.com/uploads/computer-icons-png-icon-png-transparent-background-1.png">
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- css -->
+    <link rel="stylesheet" href="style.css">
+    <title>WPM Calculater</title>
+</head>
+
+<body>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="jumbotron">
+                    <!-- show div -->
+                    <div class="row">
+                        <h1>WMP Calulater</h1>
+                        <h3>Second: <span id="time">0</span></h3>
+                        <h3>WPM: <span id="wpm">0</span></h3>
+                    </div>
+                    <!-- operation div -->
+                    <div class="row m-5 p-5">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="text">Words Quantity:</label>
+                                <input class="input-lg space" type="number" id="words" placeholder="Words">
+                                <button class="btn btn-lg btn-warning btn-block space" id="start">Start</button>
+                                <button class="btn btn-lg btn-default btn-block space" id="stop">Stop</button>
+                                <button class="btn btn-lg btn-default btn-block space" id="reset">Reset</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <script>
+            var time = 0;
+            var timer;
+            $('#start').click(function () {
+                var words = $('#words').val();                
+                timer = setInterval(function () {
+                    time++;
+                    $('#time').text(time);
+                    var wpm = Math.round(words / (time / 60));
+                    $('#wpm').text(wpm);
+                }, 1000);
+            });
+            $('#stop').click(function () {
+                clearInterval(timer);
+            });
+            $('#reset').click(function () {
+                time = 0;
+                $('#time').text(time);
+                $('#wpm').text(0);
+            });
+        </script>
+
+
+</body>
+
+</html>
