@@ -26,9 +26,9 @@
                 <div class="jumbotron">
                     <!-- show div -->
                     <div class="row">
-                        <h1>WMP Calulater</h1>
-                        <h3>Second: <span id="time">0</span></h3>
-                        <h3>WPM: <span id="wpm">0</span></h3>
+                        <h4>WMP Calulater</h4>
+                        <h2>Second: <span id="time">0</span></h2>
+                        <h2>WPM: <span id="wpm">0</span></h2>
                     </div>
                     <!-- operation div -->
                     <div class="row m-5 p-5">
@@ -41,8 +41,14 @@
                                 <button class="btn btn-lg btn-default btn-block space" id="reset">Reset</button>
                             </div>
                         </div>
-
                     </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p>100-200 Normal rate for learning</p>
+                            <p>200-400 Good rate for comprehension</p>
+                            <p>400-700 Normally done for speed reading</p>
+                            <p>above 500-600 sacrificing comprehension</p>
+                        </div>
                 </div>
             </div>
 
@@ -51,7 +57,7 @@
             var time = 0;
             var timer;
             $('#start').click(function () {
-                var words = $('#words').val(); 
+                var words = $('#words').val();
                 // disable button
                 $('#start').attr('disabled', true);
                 // disable input and reset button
@@ -62,6 +68,14 @@
                     $('#time').text(time);
                     var wpm = Math.round(words / (time / 60));
                     $('#wpm').text(wpm);
+                    // 如果wpm小于500大于400，就把颜色改成绿色
+                    if (wpm < 500 && wpm > 400) {
+                        $('#wpm').css('color', 'green');
+                    } else if (wpm < 400) {
+                        $('#wpm').css('color', 'red');
+                    } else {
+                        $('#wpm').css('color', 'blue');
+                    }
                 }, 1000);
             });
             $('#stop').click(function () {
