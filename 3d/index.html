@@ -26,6 +26,18 @@
 <script src="./lib/dat.gui.min.js"></script>
 
 <script>
+    // get url params
+    function getUrlVars() {
+        var vars = {};
+        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+            vars[key] = value;
+        });
+        return vars;
+    }
+
+    var urlParams = getUrlVars();
+    var modelPath = urlParams.model;
+
     var renderer;
     function initRender() {
         renderer = new THREE.WebGLRenderer({antialias:true});
@@ -77,14 +89,14 @@
         scene.add(helper);
 
         var mtlLoader = new THREE.MTLLoader();
-        mtlLoader.setPath('./frosty/');
+        mtlLoader.setPath('./'+modelPath+'/');
         //加载mtl文件
-        mtlLoader.load('frostyflakes.mtl', function (material) {
+        mtlLoader.load(modelPath+'.mtl', function (material) {
             var objLoader = new THREE.OBJLoader();
             //设置当前加载的纹理
             objLoader.setMaterials(material);
-            objLoader.setPath('./frosty/');
-            objLoader.load('./frostyflakes.obj', function (object) {
+            objLoader.setPath('./'+modelPath+'/');
+            objLoader.load(modelPath+'.obj', function (object) {
 
                 // //获取两个翅膀的位置
                 // var wing2 = object.children[5];
