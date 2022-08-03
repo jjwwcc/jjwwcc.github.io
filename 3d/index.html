@@ -77,14 +77,14 @@
         scene.add(helper);
 
         var mtlLoader = new THREE.MTLLoader();
-        mtlLoader.setPath('/frosty/');
+        mtlLoader.setPath('./frosty/');
         //加载mtl文件
         mtlLoader.load('frostyflakes.mtl', function (material) {
             var objLoader = new THREE.OBJLoader();
             //设置当前加载的纹理
             objLoader.setMaterials(material);
-            objLoader.setPath('/frosty/');
-            objLoader.load('/frostyflakes.obj', function (object) {
+            objLoader.setPath('./frosty/');
+            objLoader.load('./frostyflakes.obj', function (object) {
 
                 // //获取两个翅膀的位置
                 // var wing2 = object.children[5];
