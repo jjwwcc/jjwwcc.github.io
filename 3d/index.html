@@ -71,9 +71,9 @@
 
     var light;
     function initLight() {
-        scene.add(new THREE.AmbientLight(0x444444));
+        scene.add(new THREE.AmbientLight(0x444444, 1.3));
 
-        light = new THREE.PointLight(0xffffff);
+        light = new THREE.PointLight(0xffffff, 1.3);
         light.position.set(0,40,50);
 
         //告诉平行光需要开启阴影投射
@@ -144,7 +144,7 @@
         //是否自动旋转
         controls.autoRotate = true;
         //设置相机距离原点的最远距离
-        controls.minDistance  = 10;
+        controls.minDistance  = 5;
         //设置相机距离原点的最远距离
         controls.maxDistance  = 600;
         //是否开启右键拖拽
