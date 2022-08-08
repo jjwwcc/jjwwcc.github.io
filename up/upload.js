@@ -55,6 +55,7 @@ form.addEventListener('submit', function (e) {
             document.getElementById('progress').style.display = 'none';
             // hide the percent
             document.getElementById('percent').innerHTML = '<h4>Uploaded!</h4>';
+            new QRCode(document.getElementById("qrcode"), url);
 
         }
 
@@ -87,6 +88,8 @@ $('#back-form').click(function () {
     $('#percent').text('');
     $('#form').show();
     $('#file').val('');
+    // clear qrcode
+    $('#qrcode').html('');
 });
 
 $('#error-back').click(function () {
