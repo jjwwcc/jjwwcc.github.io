@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- css -->
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@latest/dist/tesseract.min.js"></script>
+    <title>OCR</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>CopyMsg.com</h1>
+        <input type="file" accept="image/*" name="image" id="file" onchange="loadFile(event)" style="display: none;">
+        <label for="file" style="cursor: pointer;"> Click Here to Upload Image / Take Picture </label></p>
+        <img id="output" width="450px" />
+        <div id="processing" style="display: none;"></div>
+        <div id="words" style="display: none;"></div>
+        <div id="result"></div>
+
+    </div>
+    <script>
+        var loadFile = function (event) {
+            var image = document.getElementById('output');
+            image.src = URL.createObjectURL(event.target.files[0]);
+            // clear previous result
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('words').innerHTML = '';
+            document.getElementById('processing').innerHTML = '';
+            ocr();
+        };
+        // ocr
+        var ocr = function () {
+            var image = document.getElementById('output');
+            const { createWorker } = Tesseract;
+            const worker = createWorker(
+                {
+                    // show loading progress
+                    logger: m => {
+                        // console.log(m);
+                        // show processing status
+                        document.getElementById('processing').style.display = 'block';
+                        document.getElementById('processing').innerHTML = m.status;
+                        // show loading percentage
+                        if (m.status === 'recognizing text') {
+                            document.getElementById('processing').style.display = 'block';
+                            // show loading percentage get 2 decimal places
+                            var percentage = m.progress * 100;
+                            document.getElementById('processing').innerHTML = percentage.toFixed(2) + '% Scanned';
+                        }
+                        if (m.progress === 1) {
+                            document.getElementById('processing').style.display = 'none';
+                        }
+                    }
+                }
+            );
+            async function recognize() {
+                await worker.load();
+                await worker.loadLanguage('eng');
+                await worker.initialize('eng');
+                const { data: { text } } = await worker.recognize(image);
+                document.getElementById('result').innerText = text;
+                // split the text by space and breakline, count the number of words
+                var words = text.split(/[ ,\n]/);
+                // remove empty words
+                words = words.filter(word => word.length > 0);
+                var numberOfWords = words.length;
+                document.getElementById('words').style.display = 'block';
+                document.getElementById('words').innerText = 'The total ' + numberOfWords + ' words recognized';
+                worker.terminate();
+            }
+            recognize();
+
+
+        };
+
+    </script>
+
+
+
+
+
+</body>
+
+</html>
