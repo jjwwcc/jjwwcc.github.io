@@ -40,6 +40,8 @@
             const { createWorker } = Tesseract;
             const worker = createWorker(
                 {
+                    workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@latest/dist/worker.min.js',
+                    langPath: './lang-data',
                     // show loading progress
                     logger: m => {
                         console.log(m);
