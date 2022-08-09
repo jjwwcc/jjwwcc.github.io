@@ -13,10 +13,12 @@
 
 <body>
     <div class="container">
+        <img src="ocr.png" width="55px" alt="CopyMsg">
         <h1>CopyMsg.com</h1>
         <input type="file" accept="image/*" name="image" id="file" onchange="loadFile(event)" style="display: none;">
         <label for="file" style="cursor: pointer;"> Click Here to Upload Image / Take Picture </label></p>
         <img id="output" width="450px" />
+        <div id="wait" style="display: none;"></div>
         <div id="processing" style="display: none;"></div>
         <div id="words" style="display: none;"></div>
         <div id="result"></div>
@@ -40,7 +42,7 @@
                 {
                     // show loading progress
                     logger: m => {
-                        // console.log(m);
+                        console.log(m);
                         // show processing status
                         document.getElementById('processing').style.display = 'block';
                         document.getElementById('processing').innerHTML = m.status;
@@ -55,9 +57,12 @@
                             document.getElementById('processing').style.display = 'none';
                         }
                     }
+
                 }
             );
             async function recognize() {
+                document.getElementById('wait').style.display = 'block';
+                document.getElementById('wait').innerHTML = 'Working...';
                 await worker.load();
                 await worker.loadLanguage('eng');
                 await worker.initialize('eng');
@@ -70,6 +75,7 @@
                 var numberOfWords = words.length;
                 document.getElementById('words').style.display = 'block';
                 document.getElementById('words').innerText = 'The total ' + numberOfWords + ' words recognized';
+                document.getElementById('wait').style.display = 'none';
                 worker.terminate();
             }
             recognize();
