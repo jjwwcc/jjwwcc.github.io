@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="css.css">
+    <script src="api.js"></script>
+    <title>ISEE Words based on SmileDonkey API</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">ISEE Vocabulary </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <!-- <li class="nav-item active">
+                        <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
+                    </li> -->
+                    <form class="form-inline my-2 my-lg-0">
+                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" id="search-word">
+                        <button class="btn btn-outline-success my-2 my-sm-0" id="search">Search</button>
+                    </form>
+            </div>
+        </div>
+    </nav>
+    <div class="container m-3">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="list-group list-group-horizontal text-center flex-wrap mh-md-100" id="list"></ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="d-flex">
+                    <button class="btn btn-light btn-block" id="prev" value="" type="submit">PREV GROUP</button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex">
+                    <button class="btn btn-light btn-block" id="next" value="" type="submit">NEXT GROUP</button>
+                </div>
+            </div>
+        </div>
+        <div class="row m-3">
+            <div class="col-md-12">
+                <!-- card -->
+                <div class="card p-1">
+                    <div class="card-title p-3 m-0">
+                        <div class="row">
+                            <div id="title" class="col-md-8"></div>
+                            <div class="col-md-4 text-right">
+                                <span id="created_at"></span>
+                                <span id="source"></span>
+                                <span id="level"></span>                            
+                            </div>
+                        </div>                       
+                    </div>
+                    <div class="card-body">
+                        <div id="details"></div>
+                        <div id="image"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
