@@ -1,19 +1,24 @@
-<!DOCTYPE html>
 <html>
 
 <head>
-  <title>Simple webAR Demo</title>
-  <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <title>Advanced webAR Demo</title>
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
 </head>
 
 <body>
-  <a-scene arjs>
-
-    <a-entity camera></a-entity>
-    <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
-    <a-sphere position="1 0.75 -3" radius="1.25" color="#EF2D5E"></a-sphere>
-  </a-scene>
-
+    <a-scene arjs>
+        <a-entity camera></a-entity>
+        <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
+        <a-sphere position="1 0.75 -3" radius="1.25" color="#EF2D5E"></a-sphere>
+        <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
+        <a-tree position="1 1.25 -3"></a-tree>
+        <a-nurbs-curve position="0 0.5 0" color="#D8D8D8" points="0 0 0, 0 1 0, 1 1 0, 1 0 0" details="2" closed="true">
+        </a-nurbs-curve>
+        <a-sound
+            src="https://ia800501.us.archive.org/18/items/Edison_Phonograph_Commercials_and_Miscellaneous_Recordings/edison_phonograph_commercials_and_miscellaneous_recordings.mp3"
+            autoplay="true" position="0 0.5 0"></a-sound>
+    </a-scene>
 </body>
 
 </html>
