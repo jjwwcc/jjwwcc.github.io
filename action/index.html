@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>TensorFlow.js Demo</title>
+</head>
+
+<body>
+    <!-- 显示视频流的容器 -->
+    <video id="video" width="400" height="300" autoplay></video>
+    
+    <!-- 动作名称 -->
+    <pre id="result_action"></pre>
+
+    <!-- 发现部位 -->
+    <pre id="result_part"></pre>
+
+    <!-- canvas -->
+    <canvas id="canvas" width="800" height="600"></canvas>
+
+    <!-- 显示预测结果的容器 -->
+    <pre id="result"></pre>
+
+    <!-- 引用 TensorFlow.js 模块 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+
+    <!-- 引用 posenet 模块 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/posenet"></script>
+
+    <!-- 执行 JavaScript 代码 -->
+    <script>
+
+        var left_count = 0;
+        var right_count = 0;
+
+
+        // 定义 async 函数
+        async function predict() {
+            // 显示视频流的容器
+            const video = document.getElementById('video');
+
+            // 显示预测结果的容器
+            const result = document.getElementById('result');
+
+            // 加载预训练的模型
+            const model = await posenet.load();
+
+            // 获取摄像头的视频流
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(async (stream) => {
+                    // 将视频流显示在网页上
+                    const video = document.getElementById('video');
+                    video.srcObject = stream;
+                    video.play();
+
+                    // 加载 posenet 模型
+                    const model = await posenet.load();
+
+                    // 每秒钟进行一次人体姿态估计
+                    setInterval(async () => {
+                        // 获取当前帧的图像数据
+                        const image = tf.browser.fromPixels(video);
+
+                        // 使用 posenet 模型进行人体姿态估计
+                        const poses = await model.estimateSinglePose(image);
+
+                        // 获取人体的关节点坐标
+                        const keypoints = poses.keypoints;
+
+                        // 获取可信度高的关键点
+                        const trustedKeypoints = keypoints.filter((keypoint) => keypoint.score > 0.9);
+                        result.innerHTML = JSON.stringify(trustedKeypoints, null, 2);
+
+                        // 显示所有trustedKeypoints的部位名称
+                        const result_part = document.getElementById('result_part');
+                        result_part.innerHTML = JSON.stringify(trustedKeypoints.map((keypoint) => keypoint.part), null, 2);
+
+
+
+                        // 创建 canvas 元素
+                        const canvas = document.getElementById('canvas');
+                        const ctx = canvas.getContext('2d');
+
+                        // 绘制图像
+                        const imageElement = document.getElementById('video');
+                        ctx.drawImage(imageElement, 0, 0);
+
+                        // 获取左手的位置
+                        const leftWrist = keypoints.find((keypoint) => keypoint.part === 'leftWrist');
+
+                        // 获取右手的位置
+                        const rightWrist = keypoints.find((keypoint) => keypoint.part === 'rightWrist');
+
+                        // 获取左肩的位置
+                        const leftShoulder = keypoints.find((keypoint) => keypoint.part === 'leftShoulder');
+
+                        // 获取右肩的位置
+                        const rightShoulder = keypoints.find((keypoint) => keypoint.part === 'rightShoulder');
+
+                        // distance 函数
+                        // 计算两个点之间的距离
+                        function distance(point1, point2) {
+                            // 计算 x 轴的距离
+                            const dx = point1.x - point2.x;
+                            // 计算 y 轴的距离
+                            const dy = point1.y - point2.y;
+                            // 返回两个点之间的距离
+                            return Math.sqrt(dx * dx + dy * dy);
+                        }
+
+                        // 计算左肩和左手的距离
+                        const leftDistance = distance(leftShoulder.position, leftWrist.position);
+
+                        // 计算右肩和右手的距离
+                        const rightDistance = distance(rightShoulder.position, rightWrist.position);
+
+                        // result_action.innerHTML = '左手距离：' + leftDistance + '，右手距离：' + rightDistance;
+
+                        // left distance > 400
+                        if (leftDistance > 400) {
+                            left_count++;
+                            result_action.innerHTML = '左手距离：' + leftDistance + '，右手距离：' + rightDistance + '，left_count：' + left_count;
+                        }
+
+                        if (rightDistance > 400) {
+                            right_count++;
+                            result_action.innerHTML = '左手距离：' + leftDistance + '，右手距离：' + rightDistance + '，right_count：' + right_count;
+                        }
+
+
+                        // 绘制人体的关节点
+                        keypoints.forEach((keypoint) => {
+                            // 只留下可信度大于等于 0.5 的点
+                            if (keypoint.score >= 0.9) {
+                                ctx.beginPath();
+                                ctx.arc(keypoint.position.x, keypoint.position.y, 3, 0, 2 * Math.PI);
+                                ctx.fillStyle = 'red';
+                                ctx.fill();
+                            }
+                        });
+                    }, 1000);
+                });
+        }
+
+        // 调用 async 函数
+        predict();
+    </script>
+</body>
+
+</html>
