@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>gpt</title>
+    <title>GPT-3</title>
     <style>
         body {
             margin: 0;
@@ -55,12 +55,17 @@
             padding: 20px;
             text-align: center;
         }
+        #error {
+            padding: 20px;
+            text-align: center;
+            color: red;
+        }
     </style>
 </head>
 <body>
     <!-- 一个信息提交框 -->
-    <form action="#" method="post">
-        <label for="token">Token:</label>
+    <form>
+        <label for="token">API keys (Get it from https://beta.openai.com/account/api-keys):</label>
         <!-- 一个填写token的input -->
         <input type="text" name="token" value="" size="40">
         <br>
@@ -89,7 +94,7 @@
         form.addEventListener('submit', function (e) {
             // 表单token和text不能为空
             if (!form.token.value || !form.text.value) {
-                alert('token and text can not be empty!');
+                error.innerHTML = 'token and text can not be empty!';
                 return;
             }
             // 阻止表单默认提交行为
