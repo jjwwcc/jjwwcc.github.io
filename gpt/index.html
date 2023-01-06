@@ -67,7 +67,7 @@
         <!-- 多行的文本框 -->
         <textarea name="text" id="" name="text" cols="30" rows="10"></textarea>
         <br>
-        <input type="submit" value="提交">
+        <input type="submit" value="Submit">
     </form>
     <!-- 一个markdown格式信息显示区域 -->
     <div id="result"></div>
@@ -87,7 +87,7 @@
         form.addEventListener('submit', function (e) {
             // 表单token和text不能为空
             if (!form.token.value || !form.text.value) {
-                alert('token和text不能为空');
+                alert('token and text can not be empty!');
                 return;
             }
             // 阻止表单默认提交行为
@@ -100,7 +100,7 @@
             }
             // 将结果区域清空
             result.innerHTML = '';
-            gptMsg.innerHTML = '正在生成中...';
+            gptMsg.innerHTML = 'Generating...';
             // 发送请求
             fetch('https://api.openai.com/v1/completions', {
                 method: 'POST',
