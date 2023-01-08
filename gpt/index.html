@@ -70,12 +70,12 @@
         }
 
         #gptMsg {
-            padding: 20px;
+            padding: 10px;
             text-align: center;
         }
 
         #error {
-            padding: 20px;
+            padding: 0px;
             text-align: center;
             color: red;
         }
@@ -96,9 +96,9 @@
         <br>
         <input type="submit" value="Submit">
     </form>
-    <pre id="result"></pre>
     <div id="gptMsg"></div>
     <div id="error"></div>
+    <pre id="result"></pre>
     <script>
         // 从localstorage中获取token
         var token = localStorage.getItem('token');
@@ -148,9 +148,15 @@
                 return response.text();
             }).then(function (text) {
                 gptMsg.innerHTML = ' ';
-                // 读取choices中的text
-                var text = JSON.parse(text).choices[0].text;
+                error.innerHTML = ' ';
+                var text = JSON.parse(text);
                 console.log(text);
+                // 如果text.choices不存在，就提示用户
+                if (!text.choices) {
+                    error.innerHTML = text.error.message;
+                    return;
+                }
+                text = text.choices[0].text;
                 // 避免渲染html
                 text = text.replace(/</g, '&lt;');
                 text = text.replace(/>/g, '&gt;');
