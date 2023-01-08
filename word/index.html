@@ -184,6 +184,9 @@
                     document.querySelector('label[for="token"]').style.display = 'block';
                     return;
                 }
+                // 隐藏token输入框和label
+                document.querySelector('input[name="token"]').style.display = 'none';
+                document.querySelector('label[for="token"]').style.display = 'none';
                 text = text.choices[0].text;
                 // 避免渲染html
                 text = text.replace(/</g, '&lt;');
