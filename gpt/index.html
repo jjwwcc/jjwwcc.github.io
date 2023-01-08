@@ -144,7 +144,7 @@
                 var text = JSON.parse(text).choices[0].text;
                 console.log(text);
                 // 将text中的\n替换为<br>
-                text = text.replace(/\n/g, '<br>');
+                // text = text.replace(/\n/g, '<br>');
                 // 如果有markdown控制符，则将markdown控制符替换为html控制符
                 text = text.replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>');
                 text = text.replace(/(\*|_)(.*?)\1/g, '<em>$2</em>');
