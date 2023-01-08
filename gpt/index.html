@@ -18,6 +18,13 @@
             width: 100%;
         }
 
+        header {
+            padding: 20px;
+            background: #333;
+            color: #fff;
+            text-align: center;
+        }
+
         form {
             padding: 20px;
             background: #f1f1f1;
@@ -25,7 +32,9 @@
 
         form label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+            font-weight: bold;
+
         }
 
         form input {
@@ -53,12 +62,16 @@
             color: #fff;
             border: none;
             cursor: pointer;
+            font-family: 'Roboto', sans-serif;
         }
 
         pre {
             padding: 20px;
             background: #f1f1f1;
             white-space: pre-wrap;
+            /* 字体更漂亮，更大一点 */
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.9em;
         }
 
         code {
@@ -85,22 +98,25 @@
 </head>
 
 <body>
+    <!-- a header with logo -->
+    <header>
+        <img src="icon.png" alt="logo" width="100">
+    </header>
+
+    <div id="gptMsg"></div>
+    <div id="error"></div>
+    <pre id="result"></pre>
+
     <!-- 一个信息提交框 -->
     <form>
         <label for="token">API keys (Get it from https://beta.openai.com/account/api-keys):</label>
         <!-- 一个填写token的input -->
         <input type="text" name="token" value="">
-        <br>
         <label for="text">Prompt:</label>
-        <br>
         <!-- 多行的文本框 -->
         <textarea name="text" id="" name="text" cols="30" rows="10"></textarea>
-        <br>
-        <input type="submit" value="Submit">
+        <input type="submit" value="SUBMIT">
     </form>
-    <div id="gptMsg"></div>
-    <div id="error"></div>
-    <pre id="result"></pre>
     <script>
         document.documentElement.style.height = window.innerHeight + 'px'
         // 从localstorage中获取token
