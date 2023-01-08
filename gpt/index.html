@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="icon.png" type="image/x-icon">
+    <link rel="apple-touch-icon" href="icon.png">
     <link rel="manifest" href="manifest.json">
-    <title>GPT-3</title>
+    <title>GPT</title>
     <style>
         body {
             margin: 0;
@@ -51,6 +53,12 @@
             cursor: pointer;
         }
 
+        pre {
+            padding: 20px;
+            background: #f1f1f1;
+            white-space: pre-wrap;       
+        }
+
         code {
             background: #f1f1f1;
             padding: 5px;
@@ -79,7 +87,7 @@
     <form>
         <label for="token">API keys (Get it from https://beta.openai.com/account/api-keys):</label>
         <!-- 一个填写token的input -->
-        <input type="text" name="token" value="" size="40">
+        <input type="text" name="token" value="">
         <br>
         <label for="text">Prompt:</label>
         <br>
@@ -88,11 +96,9 @@
         <br>
         <input type="submit" value="Submit">
     </form>
-    <!-- 一个markdown格式信息显示区域 -->
-    <div>
-        <pre id="result"></pre>
-    </div>
+    <pre id="result"></pre>
     <div id="gptMsg"></div>
+    <div id="error"></div>
     <script>
         // 从localstorage中获取token
         var token = localStorage.getItem('token');
@@ -108,8 +114,10 @@
         form.addEventListener('submit', function (e) {
             // 表单token和text不能为空
             if (!form.token.value || !form.text.value) {
-                error.innerHTML = 'token and text can not be empty!';
+                // 如果token或text为空，就提示用户
+                error.innerHTML = 'Token and text cannot be empty.';
                 return;
+
             }
             // 阻止表单默认提交行为
             e.preventDefault();
@@ -132,7 +140,7 @@
                 body: JSON.stringify({
                     'model': 'text-davinci-003',
                     'prompt': data.get('text'),
-                    'max_tokens': 900,
+                    'max_tokens': 800,
                     'temperature': 0.9
                 })
             }).then(function (response) {
@@ -143,21 +151,10 @@
                 // 读取choices中的text
                 var text = JSON.parse(text).choices[0].text;
                 console.log(text);
-                // 将text中的\n替换为<br>
-                // text = text.replace(/\n/g, '<br>');
-                // 如果有markdown控制符，则将markdown控制符替换为html控制符
-                text = text.replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>');
-                text = text.replace(/(\*|_)(.*?)\1/g, '<em>$2</em>');
-                text = text.replace(/(\~\~)(.*?)\1/g, '<del>$2</del>');
+                // 避免渲染html
                 text = text.replace(/</g, '&lt;');
                 text = text.replace(/>/g, '&gt;');
-                // text = text.replace(/(\`\`\`)(.*?)\1/g, '<pre>$2</pre>');
-                // text = text.replace(/(\`)(.*?)\1/g, '<pre>$2</pre>');
-                // text = text.replace(/(\>\>)(.*?)\1/g, '<blockquote>$2</blockquote>');
-                // text = text.replace(/(\>\>\>)(.*?)\1/g, '<blockquote><blockquote>$2</blockquote></blockquote>');
-                // 将响应数据显示在结果区域
                 result.innerHTML = text;
-
             });
         });
     </script>
