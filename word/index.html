@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="icon.png" type="image/x-icon">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>WordZap</title>
+    <style>
+        body {
+            background: #f5f5f5;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #333;
+            margin: 0;
+        }
+
+        pre {
+            background: #fff;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px;
+            font-size: 20px;
+            color: #333;
+        }
+
+        #gptMsg {
+            text-align: center;
+            font-size: 20px;
+            color: #999;
+        }
+
+        #error {
+            text-align: center;
+            font-size: 20px;
+            color: red;
+        }
+
+        #result {
+            font-family: 'Source Code Pro', monospace;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px;
+            font-size: 20px;
+            color: #333;
+
+        }
+
+        form {
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px;
+        }
+
+        form label {
+            display: block;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        form input {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        form input[type="submit"] {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        form input[type="submit"]:hover {
+            background: #eee;
+        }
+
+        header {
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- 一个漂亮的单词卡网站header，有logo即可 -->
+    <header>
+        <img src="icon.png" alt="logo" width="150" height="150">
+    </header>
+    <div id="gptMsg"></div>
+    <div id="error"></div>
+    <pre id="result"></pre>
+    <form>
+        <label for="token">API keys (Get it from https://beta.openai.com/account/api-keys):</label>
+        <input type="text" name="token" value="">
+        <br>
+        <input type="submit" value="Random Word">
+    </form>
+
+    <script>
+        document.documentElement.style.height = window.innerHeight + 'px'
+        // 从localstorage中获取token
+        var token = localStorage.getItem('token');
+        // 如果token存在，就填入input中
+        if (token) {
+            document.querySelector('input[name="token"]').value = token;
+            // 隐藏token输入框和label
+            document.querySelector('label[for="token"]').style.display = 'none';
+            document.querySelector('input[name="token"]').style.display = 'none';
+        }
+        // 获取表单
+        var form = document.querySelector('form');
+        // 获取结果显示区域
+        var result = document.querySelector('#result');
+        // 绑定表单提交事件
+        form.addEventListener('submit', function (e) {
+            // 表单token不能为空
+            if (!form.token.value) {
+                // 如果token或text为空，就提示用户
+                error.innerHTML = 'Token cannot be empty.';
+                return;
+
+            }
+            // 阻止表单默认提交行为
+            e.preventDefault();
+            // 获取表单数据
+            var data = new FormData(form);
+            // 如果token不存在，就将token存入localstorage
+            if (!token) {
+                localStorage.setItem('token', data.get('token'));
+            }
+            // 将结果区域清空
+            result.innerHTML = '';
+            gptMsg.innerHTML = 'Generating...';
+            // 发送请求
+            fetch('https://api.openai.com/v1/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + data.get('token')
+                },
+                body: JSON.stringify({
+                    'model': 'text-davinci-003',
+                    'prompt': '从Wordly Wise 3000中获取一个单词并给出多种解析和例句, 然后给出中文翻译',
+                    'max_tokens': 800,
+                    'temperature': 0.9
+                })
+            }).then(function (response) {
+                // 获取响应数据
+                return response.text();
+            }).then(function (text) {
+                gptMsg.innerHTML = ' ';
+                error.innerHTML = ' ';
+                var text = JSON.parse(text);
+                console.log(text);
+                // 如果text.choices不存在，就提示用户
+                if (!text.choices) {
+                    error.innerHTML = text.error.message;
+                    // 显示token输入框和label
+                    document.querySelector('input[name="token"]').style.display = 'block';
+                    document.querySelector('label[for="token"]').style.display = 'block';
+                    return;
+                }
+                text = text.choices[0].text;
+                // 避免渲染html
+                text = text.replace(/</g, '&lt;');
+                text = text.replace(/>/g, '&gt;');
+                result.innerHTML = text;
+            });
+        });
+    </script>
+
+</body>
+
+</html>

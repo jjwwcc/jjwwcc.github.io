@@ -1,0 +1,13 @@
+{
+    "name": "WordZzap",
+    "shortname": "WordZzap",
+    "icons": [
+        {
+            "src": "icon.png",
+            "sizes": "60x60"
+        }
+    ],
+    "starturl": "index.html",
+    "display": "standalone",
+    "background_color": "#000000"
+}
