@@ -129,6 +129,7 @@
                 gptMsg.innerHTML = ' ';  
                 // 读取choices中的text
                 var text = JSON.parse(text).choices[0].text;
+                console.log(text);
                 // 将text中的\n替换为<br>
                 text = text.replace(/\n/g, '<br>');
                 // 如果有markdown控制符，则将markdown控制符替换为html控制符
