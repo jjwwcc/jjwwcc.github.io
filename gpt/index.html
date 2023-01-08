@@ -102,6 +102,7 @@
     <div id="error"></div>
     <pre id="result"></pre>
     <script>
+        document.documentElement.style.height = window.innerHeight + 'px'
         // 从localstorage中获取token
         var token = localStorage.getItem('token');
         // 如果token存在，就填入input中
