@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -12,50 +13,59 @@
             padding: 0;
             font-family: sans-serif;
         }
+
         form {
             padding: 20px;
             background: #f1f1f1;
         }
+
         form label {
             display: block;
             margin-bottom: 10px;
         }
+
         form input {
             display: block;
             width: 100%;
             padding: 10px;
             margin-bottom: 20px;
-            box-sizing:border-box;
+            box-sizing: border-box;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+
         form textarea {
             display: block;
             width: 100%;
             padding: 10px;
             margin-bottom: 20px;
-            box-sizing:border-box;
+            box-sizing: border-box;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+
         form input[type="submit"] {
             background: #333;
             color: #fff;
             border: none;
             cursor: pointer;
         }
+
         code {
             background: #f1f1f1;
             padding: 5px;
             border-radius: 4px;
         }
+
         #result {
             padding: 20px;
         }
+
         #gptMsg {
             padding: 20px;
             text-align: center;
         }
+
         #error {
             padding: 20px;
             text-align: center;
@@ -63,6 +73,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- 一个信息提交框 -->
     <form>
@@ -78,7 +89,9 @@
         <input type="submit" value="Submit">
     </form>
     <!-- 一个markdown格式信息显示区域 -->
-    <pre><div id="result"></div></pre>
+    <div>
+        <pre id="result"></pre>
+    </div>
     <div id="gptMsg"></div>
     <script>
         // 从localstorage中获取token
@@ -115,7 +128,7 @@
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + data.get('token')
-                },                
+                },
                 body: JSON.stringify({
                     'model': 'text-davinci-003',
                     'prompt': data.get('text'),
@@ -126,7 +139,7 @@
                 // 获取响应数据
                 return response.text();
             }).then(function (text) {
-                gptMsg.innerHTML = ' ';  
+                gptMsg.innerHTML = ' ';
                 // 读取choices中的text
                 var text = JSON.parse(text).choices[0].text;
                 console.log(text);
@@ -146,6 +159,7 @@
             });
         });
     </script>
-    
+
 </body>
+
 </html>
