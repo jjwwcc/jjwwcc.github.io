@@ -149,6 +149,7 @@
             }
             // 将结果区域清空
             result.innerHTML = '';
+            error.innerHTML = ' ';
             gptMsg.innerHTML = 'Generating...';
             // 发送请求
             fetch('https://api.openai.com/v1/completions', {
@@ -168,7 +169,6 @@
                 return response.text();
             }).then(function (text) {
                 gptMsg.innerHTML = ' ';
-                error.innerHTML = ' ';
                 document.querySelector('input[name="token"]').style.display = 'none';
                 document.querySelector('label[for="token"]').style.display = 'none';
                 var text = JSON.parse(text);
