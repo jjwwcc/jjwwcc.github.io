@@ -160,7 +160,7 @@
                 body: JSON.stringify({
                     'model': 'text-davinci-003',
                     'prompt': data.get('text'),
-                    'max_tokens': 800,
+                    'max_tokens': 1000,
                     'temperature': 0.9
                 })
             }).then(function (response) {
@@ -169,8 +169,9 @@
             }).then(function (text) {
                 gptMsg.innerHTML = ' ';
                 error.innerHTML = ' ';
+                document.querySelector('input[name="token"]').style.display = 'none';
+                document.querySelector('label[for="token"]').style.display = 'none';
                 var text = JSON.parse(text);
-                console.log(text);
                 // 如果text.choices不存在，就提示用户
                 if (!text.choices) {
                     error.innerHTML = text.error.message;
