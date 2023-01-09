@@ -126,12 +126,12 @@
             document.querySelector('input[name="token"]').style.display = 'none';
             document.querySelector('label[for="token"]').style.display = 'none';
         }
+        // 获取表单
+        var form = document.querySelector('form');
+        // 获取结果显示区域
+        var result = document.querySelector('#result');
+        // 绑定表单提交事件
         form.addEventListener('submit', function (e) {
-            // 获取表单
-            var form = document.querySelector('form');
-            // 获取结果显示区域
-            var result = document.querySelector('#result');
-            // 绑定表单提交事件
             // 表单token和text不能为空
             if (!form.token.value || !form.text.value) {
                 // 如果token或text为空，就提示用户
