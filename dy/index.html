@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TVideo</title>
+    <!-- style -->
+    <style>
+       /* 抖音样式 */
+        #videoDiv {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #video {
+            width: 100%;
+            height: 100%;
+        }
+
+        #form {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #form input {
+            width: 300px;
+            height: 50px;
+            font-size: 20px;
+            padding: 0 10px;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        #form button {
+            width: 100px;
+            height: 50px;
+            font-size: 20px;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        /* 上一个视频，左侧竖着排列 */
+        #previous {
+            position: absolute;
+            top: 70%;
+            left: 0;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* 下一个视频，排在上一个视频按钮下方 */
+        #next {
+            position: absolute;
+            top: 85%;
+            left: 0;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            outline: none;
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- video div -->
+    <div id="videoDiv">
+        <!-- video with controls -->
+        <video id="video" autoplay></video>
+        <button id="previous">↑</button>
+        <button id="next">↓</button>
+    </div>
+    <!-- form to input the id -->
+    <form id="form">
+        <input type="text" id="ids" placeholder="Enter the ids">
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        let ids = [];
+        let videos = [];
+
+        // get ids to array
+        const getIds = () => {
+            // get the ids from the input
+            const idsInput = document.getElementById('ids').value;
+            // split the ids by comma
+            ids = idsInput.split(',');
+            // remove the spaces
+            ids = ids.map(id => id.trim());
+            // remove the empty ids
+            ids = ids.filter(id => id !== '');
+        }
+
+        // get ids from local storage
+        const getIdsFromLocalStorage = () => {
+            // get the ids from local storage
+            const idsFromLocalStorage = JSON.parse(localStorage.getItem('ids'));
+            // check if the ids are not null
+            if (idsFromLocalStorage !== null) {
+                // set the ids to the ids from local storage
+                ids = idsFromLocalStorage;
+            }
+        }
+
+
+        document.getElementById('form').addEventListener('submit', (event) => {
+            // prevent default
+            event.preventDefault();
+            // get the ids
+            getIds();
+
+            for (let i = 0; i < ids.length; i++) {
+                // get the id
+                const id = ids[i];
+                // get the videos from the id
+            }
+
+            fetch(`https://api.codetabs.com/v1/proxy/?quest=https://rsshub.app/twitter/media/${ids[0]}`,
+                {
+                    method: 'GET'
+                }
+            )
+                .then(response => response.text())
+                .then(data => {
+                    // create a new DOM parser
+                    const parser = new DOMParser();
+                    // parse the data to XML
+                    const xml = parser.parseFromString(data, 'text/xml');
+                    // get the items from the XML
+                    const items = xml.getElementsByTagName('item');
+                    // check if the items are not empty
+                    if (items.length !== 0) {
+                        // get each item video url and add it to the array
+                        for (let i = 0; i < items.length; i++) {
+                            // get the item
+                            const item = items[i];
+                            // get the description from the item
+                            const description = item.getElementsByTagName('description')[0].innerHTML;
+                            console.log(description);
+                            // get the video from the description
+                            const video = description.split('<video src="')[1];
+                            // if not undefined
+                            if (video !== undefined) {
+                                // get the video url
+                                const videoUrl = video.split('"')[0];
+                                // add the video url to the array
+                                videos.push(videoUrl);
+                            }
+
+                        }
+                       
+                    }
+                    console.log(videos);
+                    // 隐藏表单
+                    document.getElementById('form').style.display = 'none';
+                    // 从数组videoUrl中依次播放视频
+                    let index = 0;
+                    const video = document.getElementById('video');
+                    // 设置视频size适合浏览器
+                    video.width = window.innerWidth;
+                    video.height = window.innerHeight;
+                    // 设置视频源
+                    video.src = videos[index];
+                    video.addEventListener('ended', () => {
+                        index++;
+                        if (index < videos.length) {
+                            video.src = videos[index];
+                        }
+                    });
+                    
+                });
+        });
+
+        // previous video and next video
+        document.getElementById('previous').addEventListener('click', () => {
+            // get the video
+            const video = document.getElementById('video');
+            // get the index
+            let index = videos.indexOf(video.src);
+            // check if the index is not 0
+            if (index !== 0) {
+                // set the video src to the previous video
+                video.src = videos[index - 1];
+            }
+        });
+
+        document.getElementById('next').addEventListener('click', () => {
+            // get the video
+            const video = document.getElementById('video');
+            // get the index
+            let index = videos.indexOf(video.src);
+            // check if the index is not the last index
+            if (index !== videos.length - 1) {
+                // set the video src to the next video
+                video.src = videos[index + 1];
+            }
+        });
+
+    </script>
+
+</body>
+
+</html>
