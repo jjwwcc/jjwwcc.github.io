@@ -125,18 +125,6 @@
             ids = ids.filter(id => id !== '');
         }
 
-        // get ids from local storage
-        const getIdsFromLocalStorage = () => {
-            // get the ids from local storage
-            const idsFromLocalStorage = JSON.parse(localStorage.getItem('ids'));
-            // check if the ids are not null
-            if (idsFromLocalStorage !== null) {
-                // set the ids to the ids from local storage
-                ids = idsFromLocalStorage;
-            }
-        }
-
-
         document.getElementById('form').addEventListener('submit', (event) => {
             // prevent default
             event.preventDefault();
