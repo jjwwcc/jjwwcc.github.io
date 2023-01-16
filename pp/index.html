@@ -62,17 +62,22 @@
             border-radius: 5px;
             background-color: #ccc;
         }
+        h1 {
+            margin: 10px 0;
+        }
     </style>
 </head>
 
 <body>
+    <!-- header with logo -->
+    <h1>Transaction Tracking Numbers Upload</h1>
     <!-- Username and password -->
     <form method="post" id="authForm" >
-        <input type="text" name="username" placeholder="Username">
-        <input type="password" name="password" placeholder="Password">
+        <input type="text" name="username" placeholder="API Username">
+        <input type="password" name="password" placeholder="API Password">
         <!-- grant_type -->
         <input type="hidden" name="grant_type" value="client_credentials">
-        <button type="submit" name="submit">先关闭翻墙代理，再点Login</button>
+        <button type="submit" name="submit">Login (先关闭翻墙代理)</button>
     </form>
     <!-- Transactions and tracking numbers textareas -->
     <form method="post" id="uploadForm">
@@ -169,8 +174,16 @@
             const tracking_numbers_value = tracking_numbers.value;
             // Get each line of the transactions and put it in an array
             const transactions_array = transactions_value.split('\n');
+            // remove space
+            for (let i = 0; i < transactions_array.length; i++) {
+                transactions_array[i] = transactions_array[i].replace(/\s+/g, "");
+            }
             // Get each line of the tracking numbers and put it in an array
             const tracking_numbers_array = tracking_numbers_value.split('\n');
+            // remove space
+            for (let i = 0; i < tracking_numbers_array.length; i++) {
+                tracking_numbers_array[i] = tracking_numbers_array[i].replace(/\s+/g, "");
+            }
             // Check if the transactions and tracking numbers are the same length
             if (transactions_array.length !== tracking_numbers_array.length) {
                 // Set the result
