@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paypal Transaction Tracking Numbers Upload</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        input {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        textarea {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #ccc;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #aaa;
+        }
+
+        #result {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Username and password -->
+    <form method="post" id="authForm" >
+        <input type="text" name="username" placeholder="Username">
+        <input type="password" name="password" placeholder="Password">
+        <!-- grant_type -->
+        <input type="hidden" name="grant_type" value="client_credentials">
+        <button type="submit" name="submit">Login</button>
+    </form>
+    <!-- Transactions and tracking numbers textareas -->
+    <form method="post" id="uploadForm">
+        <textarea name="transactions" id="" cols="30" rows="10" placeholder="Transactions"></textarea>
+        <textarea name="tracking_numbers" id="" cols="30" rows="10" placeholder="Tracking numbers"></textarea>
+        <!-- Authorization Token -->
+        <input type="hidden" name="Authorization" value="" placeholder="Authorization Token">
+        <button type="submit" name="submit">Submit</button>
+    </form>
+    <!-- result -->
+    <div id="result"></div>
+    <script>
+        // Get the result div
+        const result = document.getElementById('result');
+        // Get the transactions and tracking numbers textareas
+        const transactions = document.querySelector('textarea[name="transactions"]');
+        const tracking_numbers = document.querySelector('textarea[name="tracking_numbers"]');
+        // Get the Authorization Token
+        const Authorization = document.querySelector('input[name="Authorization"]');
+        // Get the submit buttons
+        const login_submit = document.querySelector('button[name="submit"]');
+        const transactions_submit = document.querySelector('button[name="submit"]');
+        // Get the auth form
+        const authForm = document.getElementById('authForm');
+        // Get the transactions and tracking numbers form
+        const transactionsForm = document.getElementById('transactionsForm');
+        // Get the username and password
+        const username = document.querySelector('input[name="username"]');
+        const password = document.querySelector('input[name="password"]');
+
+        // access token to local storage
+        const access_token = localStorage.getItem('access_token');
+        if (access_token) {
+            Authorization.value = access_token;
+            // hide the login form
+            authForm.style.display = 'none';
+        }
+
+        // access username and password to local storage
+        const storedUser = localStorage.getItem('storedUser');
+        const storedPassword = localStorage.getItem('storedPassword');
+        if (storedUser && storedPassword) {
+            username.value = storedUser;
+            password.value = storedPassword;
+        }
+
+        // Get the login form submit button
+        login_submit.addEventListener('click', (e) => {
+            // Prevent the form from submitting
+            e.preventDefault();
+            // store username and password to local storage
+            localStorage.setItem('storedUser', username.value);
+            localStorage.setItem('storedPassword', password.value);
+            // Get the grant_type
+            const grant_type = document.querySelector('input[name="grant_type"]').value;
+            // BASIC AUTHENTICATION
+            // Create the request
+            const request = new Request('https://api-m.paypal.com/v1/oauth2/token', {
+                method: 'POST',
+                headers: 
+                    {
+                        'Authorization': 'Basic ' + btoa(username.value + ':' + password.value),
+                        'Accept': 'application/json',
+                        'Accept-Language': 'en_US',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                body: 'grant_type=' + grant_type
+            });
+            // Send the request
+            fetch(request)
+                .then(response => response.json())
+                .then(data => {
+                    // Get the access token
+                    const access_token = data.access_token;
+                    // Set the Authorization Token
+                    Authorization.value = access_token;
+                    // store access token to local storage
+                    localStorage.setItem('access_token', access_token);
+                    // Set the result
+                    result.innerHTML = JSON.stringify(data);
+                })
+                .catch(error => {
+                    // Set the result
+                    result.innerHTML = JSON.stringify(error);
+                });
+        });
+
+        // Get the transactions and tracking numbers form submit button
+        transactions_submit.addEventListener('click', (e) => {
+            // Prevent the form from submitting
+            e.preventDefault();
+            // Get the transactions and tracking numbers
+            const transactions_value = transactions.value;
+            const tracking_numbers_value = tracking_numbers.value;
+            // Get each line of the transactions and put it in an array
+            const transactions_array = transactions_value.split('\n');
+            // Get each line of the tracking numbers and put it in an array
+            const tracking_numbers_array = tracking_numbers_value.split('\n');
+            // Check if the transactions and tracking numbers are the same length
+            if (transactions_array.length !== tracking_numbers_array.length) {
+                // Set the result
+                result.innerHTML = 'The transactions and tracking numbers are not the same length';
+                return;
+            }
+            // Check if the transactions and tracking numbers are empty
+            if (transactions_array.length === 0 || tracking_numbers_array.length === 0) {
+                // Set the result
+                result.innerHTML = 'The transactions and tracking numbers are empty';
+                return;
+            }
+            // get each transaction and tracking number and put it in a object
+            const transactions_and_tracking_numbers = [];
+            for (let i = 0; i < transactions_array.length; i++) {
+                transactions_and_tracking_numbers.push({
+                    "transaction_id": transactions_array[i],
+                    "tracking_number": tracking_numbers_array[i],
+                    "status": "SHIPPED",
+                    "carrier": "China Post"
+                });
+            }
+
+            // Create the request
+            const request = new Request('https://api-m.paypal.com/v1/shipping/trackers-batch', {
+                method: 'POST',
+                headers: 
+                    {
+                        'Authorization': 'Bearer ' + Authorization.value,
+                        'Accept': 'application/json',
+                        'Accept-Language': 'en_US',
+                        'Content-Type': 'application/json'
+                    },
+                body: JSON.stringify({
+                    "trackers": transactions_and_tracking_numbers
+                })
+            });
+            // Send the request
+            fetch(request)
+                .then(response => response.json())
+                .then(data => {
+                    // Set the result
+                    result.innerHTML = JSON.stringify(data);
+                })
+                .catch(error => {
+                    // Set the result
+                    result.innerHTML = JSON.stringify(error);
+                });
+        });
+        
+    </script>
+</body>
+
+</html>
