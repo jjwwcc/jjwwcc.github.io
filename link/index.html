@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//dweet.io/client/dweet.io.min.js"></script>
+    <title>Link Share</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f2f2f2;
+        }
+        #links {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        #links h1 {
+            margin: 0;
+            padding: 0;
+            font-size: 20px;
+            text-align: center;
+        }
+        #links ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        #links ul li {
+            margin: 0;
+            padding: 0;
+            margin-bottom: 10px;
+        }
+        #links ul li a {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+        #links ul li a:hover {
+            background-color: #555;
+        }
+
+        form {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        form input {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+        form input[type="submit"] {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        form input[type="submit"]:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <!-- div links -->
+    <div id="links">
+        <h1>Links</h1>
+        <ul>
+            <li><a href="https://www.google.com">Google</a></li>
+        </ul>
+    </div>
+    <!-- form input -->
+    <form>
+        <input type="text" id="linkInput" value="">
+        <input type="submit" value="Submit">
+    </form>
+
+    <script>
+        // dweet.io id
+        var dweetioId = "0242ac120002c";
+
+        // get links
+        var links = document.getElementById("links").innerHTML;
+
+        // dweet.io listen for
+        dweetio.listen_for(dweetioId, function(dweet) {
+            console.log(dweet.content);
+            // get links from dweet.io
+            var links = dweet.content.links;
+            // split links
+            var links = links.split(",");
+            // create links html
+            var linksHtml = "";
+            // loop through links
+            for (var i = 0; i < links.length; i++) {
+                // add link to html
+                linksHtml += "<li><a href='" + links[i] + "'>" + links[i] + "</a></li>";
+            }
+            // set links html
+            document.getElementById("links").innerHTML = "<h1>Links</h1><ul>" + linksHtml + "</ul>";
+        });
+        
+        // form submit
+        document.querySelector("form").addEventListener("submit", function(e) {
+            e.preventDefault();
+            // get links from form
+            var links = document.getElementById("linkInput").value;
+            // post links to dweet.io
+            dweetio.dweet_for(dweetioId, {links: links}, function(err, dweet) {
+                // check for error
+                if (err) {
+                    // log error
+                    console.log(err);
+                }
+            });
+        });
+
+
+    </script>
+    
+</body>
+</html>
