@@ -114,6 +114,9 @@
                         document.getElementById("output").appendChild(img);
                     }
                 )
+                .catch(e => {
+                    document.getElementById("output").innerHTML = "Error: " + e;
+                })
         })
 
     </script>
