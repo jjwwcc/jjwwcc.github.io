@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Journey</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f2f2f2;
+        }
+        form {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        form label {
+            display: block;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        form input {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        form input[type="submit"] {
+            margin-top: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        form input[type="submit"]:hover {
+            background-color: #555;
+        }
+
+        form textarea {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            margin: 0;
+            padding: 0;
+            font-size: 20px;
+            text-align: center;
+            margin: 20px;
+        }
+        #output {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        image {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Open Journey</h1>
+    <form id="prompt-form">
+        <label for="prompt">Prompt:</label>
+        <textarea name="prompt" id="prompt" cols="30" rows="10" placeholder="input the text here">mdjrny-v4 style </textarea>
+        <input type="submit" value="Submit">
+    </form>
+    <div id="output"></div>
+    <script>
+        const form = document.getElementById("prompt-form");
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const prompt = document.getElementById("prompt").value;
+            document.getElementById("output").innerHTML = "Loading...";
+            fetch("https://jjwwcc-prompthero-openjourney-v2.hf.space/run/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    data: [
+                        prompt,
+                    ]
+                })
+            })
+                .then(r => r.json())
+                .then(
+                    r => {
+                        let data = r.data;
+                        document.getElementById("output").innerHTML = " ";
+                        let img = document.createElement("img");
+                        img.src = data[0];
+                        document.getElementById("output").appendChild(img);
+                    }
+                )
+        })
+
+    </script>
+</body>
+
+</html>
