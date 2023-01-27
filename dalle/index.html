@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- style -->
+    <style>
+      body {
+        background-color: rgb(4, 7, 33);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      /* a beautiful form with a nice background */
+      form {
+        background-color: #f1f1f1;
+        padding: 20px;
+        border-radius: 5px;
+        /* layout centered */
+        display: flex;
+        flex-direction: column;
+      }
+
+      h1 {
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-size: 60px;
+        color: white;
+        margin: 20px;
+      }
+
+      input {
+        margin: 10px;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-size: medium;
+      }
+
+      textarea {
+        margin: 10px;
+        /* disable the drag and shape feature */
+        resize: none;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-size: medium;
+      }
+
+      /* change the submit button */
+      input[type="submit"] {
+        background-color: #1b50d6;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-size: large;
+        color: white;
+        padding: 12px 20px;
+        /* set a border with a size of 50px and a color of ghostwhite */
+        border: 3px solid rgb(220, 220, 220);
+        border-radius: 16px;
+        cursor: pointer;
+      }
+
+      /* change the output */
+      #output {
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-size: large;
+        color: white;
+        padding-top: 25px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
+
+      /* image css */
+      img {
+        width: 450px;
+        height: 450px;
+        border: 2px solid rgb(255, 255, 255);
+        border-radius: 16px;
+        margin: 20px;
+        padding-top: 25px;
+      }
+    </style>
+
+    <title>DALLE 2</title>
+  </head>
+  <body>
+    <h1>DALLE 2</h1>
+    <!-- write a form and input -->
+    <form action="index.php" method="post">
+      <!-- input API key -->
+      <input type="text" name="api_key" placeholder="Enter your API key" />
+      <!-- add a multiline -->
+      <textarea
+        name="prompt"
+        cols="60"
+        rows="10"
+        placeholder="Enter your prompt"
+      ></textarea>
+      <input type="submit" value="SUBMIT" />
+    </form>
+
+    <!-- add a place to show output -->
+    <div id="output"></div>
+
+    <script>
+      // if inputed an api-key, get api_key from local storage and set it to the input
+      if (localStorage.getItem('api_key')) {
+        document.querySelector('input[name="api_key"]').value = localStorage.getItem('api_key');
+      }
+
+      // get the form
+      const form = document.querySelector('form');
+      // get the output div
+      const output = document.querySelector('#output');
+
+      // add a submit event listener
+      form.addEventListener('submit', (e) => {
+        localStorage.setItem('api_key', document.querySelector('input[name="api_key"]').value);
+        // prevent the default behavior
+        e.preventDefault();
+        // get the form data
+        const formData = new FormData(form);
+        // create a new request
+        const request = new XMLHttpRequest();
+        // add a loading message until the images load
+        output.innerHTML = 'Loading...';
+        // fetch DALLE 2 API from OpenAI
+        fetch('https://api.openai.com/v1/images/generations', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${formData.get('api_key')}`
+          },
+          body: JSON.stringify({
+            'prompt': formData.get('prompt'),
+            'n': 2,
+            'size': '1024x1024'
+          })
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            const urlData = data.data;
+            // show the output
+            output.innerHTML = `
+              <img src="${urlData[0].url}" alt="image 1" />
+              <img src="${urlData[1].url}" alt="image 2" />
+            `;
+          });
+      });
+
+    </script>
+  </body>
+</html>
