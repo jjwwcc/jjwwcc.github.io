@@ -85,7 +85,7 @@
         <textarea name="tracking_numbers" id="" cols="30" rows="10" placeholder="Tracking numbers"></textarea>
         <!-- Authorization Token -->
         <input type="hidden" name="Authorization" value="" placeholder="Authorization Token">
-        <button type="submit" name="submit">Submit</button>
+        <button type="submit" name="submit" id="transaction_submit">Submit</button>
     </form>
     <!-- result -->
     <div id="result"></div>
@@ -99,7 +99,7 @@
         const Authorization = document.querySelector('input[name="Authorization"]');
         // Get the submit buttons
         const login_submit = document.querySelector('button[name="submit"]');
-        const transactions_submit = document.querySelector('button[name="submit"]');
+        const transactions_submit = document.getElementById('transaction_submit');
         // Get the auth form
         const authForm = document.getElementById('authForm');
         // Get the transactions and tracking numbers form
