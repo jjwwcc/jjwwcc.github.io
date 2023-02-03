@@ -169,7 +169,7 @@
                 localStorage.setItem('token', data.get('token'));
             }
             // 将结果区域清空
-            result.innerHTML = '';
+            // result.innerHTML = '';
             error.innerHTML = ' ';
             gptMsg.innerHTML = 'Generating...';
             // console.log(promptStr);
@@ -231,6 +231,8 @@
                 // conversation history
                 chatHistory = promptStr + text + '<|im_sep|>';
                 // console.log(chatHistory);
+                // clear prompt
+                form.text.value = '';
 
             });
         });
