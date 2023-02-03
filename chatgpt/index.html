@@ -104,7 +104,8 @@
 
     <div id="gptMsg"></div>
     <div id="error"></div>
-    <pre id="result"></pre>
+    <!-- <pre id="result"></pre> -->
+    <div id="result"></div>
 
     <!-- 一个信息提交框 -->
     <form>
@@ -117,7 +118,13 @@
         <input type="submit" value="SUBMIT">
     </form>
     <script>
+        // current date
+        var today = new Date();
+        today = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
         // 从localstorage中获取token
+        var chatHistory = '';
+        var promptStr = '';
+        var historyPromptStr = '';
         var token = localStorage.getItem('token');
         // 如果token存在，就填入input中
         if (token) {
@@ -143,6 +150,20 @@
             e.preventDefault();
             // 获取表单数据
             var data = new FormData(form);
+            var prompt = data.get('text');
+            // if chatHistory is not empty, add it to prompt
+            if (chatHistory !== '') {
+                promptStr = chatHistory + '\n User:\n' + prompt + '<|im_sep|>\n' +
+                    'ChatGPT:';
+            } else {
+                promptStr =
+                'Respond conversationally.\n' +
+                'Current date:' + today +'<|im_end|>\n' +
+                '\n' +
+                'User:\n' +
+                prompt + '<|im_sep|>\n' +
+                'ChatGPT:';
+            }                        
             // 如果token不存在，就将token存入localstorage
             if (!token) {
                 localStorage.setItem('token', data.get('token'));
@@ -151,6 +172,7 @@
             result.innerHTML = '';
             error.innerHTML = ' ';
             gptMsg.innerHTML = 'Generating...';
+            // console.log(promptStr);
             // 发送请求
             fetch('https://api.openai.com/v1/completions', {
                 method: 'POST',
@@ -160,7 +182,7 @@
                 },
                 body: JSON.stringify({
                     'model': 'text-chat-davinci-002-20221122',
-                    'prompt': data.get('text'),
+                    'prompt': promptStr,
                     'max_tokens': 1000,
                     'temperature': 0.9
                 })
@@ -183,10 +205,33 @@
                     return;
                 }
                 text = text.choices[0].text;
-                // 避免渲染html
+                // remove <|im_end|> from text
+                text = text.replace('<|im_end|>', '');
+                // // 避免渲染html
                 text = text.replace(/</g, '&lt;');
                 text = text.replace(/>/g, '&gt;');
-                result.innerHTML = text;
+                // remove all <|im_sep|> from promptStr
+                historyPromptStr = promptStr.replace(/<\|im_sep\|>/g, '<br>');
+                // remove all <|im_end|> from historyPromptStr
+                historyPromptStr = historyPromptStr.replace(/<\|im_end\|>/g, '<br>');
+                // remove Respond conversationally. Current date
+                historyPromptStr = historyPromptStr.replace(/Respond conversationally.\nCurrent date.*/g, '');
+                result.innerHTML = `
+                    <div style="display: flex; flex-direction: row; justify-content: flex-start;">
+                        <div style="background: #333; color: #fff; padding: 10px; border-radius: 4px; margin: 10px; max-width: 50%;">
+                            ${historyPromptStr}
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: row; justify-content: flex-start;">
+                        <div style="background: #f1f1f1; padding: 10px; border-radius: 4px; margin: 10px; max-width: 50%;">
+                            ${text}
+                        </div>
+                    </div>
+                `;
+                // conversation history
+                chatHistory = promptStr + text + '<|im_sep|>';
+                // console.log(chatHistory);
+
             });
         });
     </script>
