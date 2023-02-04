@@ -34,7 +34,14 @@
             left: 0;
             z-index: 999;
             display: flex;
+            justify-content: space-between;
             align-items: center;
+        }
+
+        #logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         header img {
@@ -43,7 +50,7 @@
             margin-left: 10px;
         }
 
-        header h1 {
+        h1 {
             display: inline;
             margin-left: 10px;
             font-size: 1.2em;
@@ -54,12 +61,18 @@
             border: none;
             cursor: pointer;
             font-family: 'Roboto', sans-serif;
-            margin-left: auto;
-            margin-right: 15px;
             padding: 5px 10px;
+            margin: 0 10px;
             border-radius: 4px;
             border: #f1f1f1 solid 1px;
             text-decoration: none;
+        }
+
+        .menu {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-right: 10px;
         }
 
         form {
@@ -102,11 +115,20 @@
         }
 
         form input[type="submit"] {
+            /* a awesome button */
             background: #333;
             color: #fff;
             border: none;
             cursor: pointer;
             font-family: 'Roboto', sans-serif;
+            font-size: 1.0em;
+            padding: 10px 20px;
+            border-radius: 4px;
+            border: #f1f1f1 solid 1px;
+            width: 85%;
+            margin-left: auto;
+            margin-right: auto;
+
         }
 
         #result {
@@ -120,10 +142,10 @@
             top: 45px;
             left: 0;
             width: 100%;
-            background: #4ea502;
+            background: #3ea454;
             color: #fff;
             display: none;
-            font-size: 1.2em;
+            font-size: 1.0em;
         }
 
         pre {
@@ -149,10 +171,14 @@
 <body>
     <!-- a header with logo -->
     <header>
-        <img src="icon.svg" alt="logo" width="35">
-        <h1>Sandwich Box</h1>
-        <!-- contact button -->
-        <a href="https://jjwwcc.github.io/chat" target="_blank"> CONTACT </a>
+        <div id="logo">
+            <img src="icon.svg" alt="logo" width="35">
+            <h1>Sandwich Box</h1>
+        </div>
+        <div class="menu">
+            <a href="#" id="clear"> Clear History </a>
+            <a href="https://jjwwcc.github.io/chat" target="_blank"> Contact </a>
+        </div>
     </header>
 
     <div id="gptMsg"></div>
@@ -227,7 +253,7 @@
             // result.innerHTML = '';
             error.innerHTML = ' ';
             gptMsg.style.display = 'block';
-            gptMsg.innerHTML = 'Generating...';
+            gptMsg.innerHTML = '<div style="padding: 15px;">Generating...</div>';
             // console.log(promptStr);
             // 发送请求
             fetch('https://api.openai.com/v1/completions', {
@@ -297,6 +323,11 @@
                 document.getElementById("promptSubmit").click();
             }
         };
+        // clear chatHistory
+        document.getElementById('clear').addEventListener('click', function () {
+            chatHistory = '';
+            result.innerHTML = '';
+        });
     </script>
 
 </body>
