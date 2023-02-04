@@ -349,6 +349,8 @@
                 minute: "numeric",
                 second: "numeric"
             });
+            // remove :
+            time = time.replace(/:/g, '');
             var saveText = window.promptStr + document.getElementById('recentText').innerText;
             saveText = saveText.split('<|im_end|>')[1];
             saveText = saveText.replace(/^\s+|\s+$/g, '');
