@@ -7,7 +7,7 @@
             "sizes": "60x60"
         }
     ],
-    "apple-touch-icon": "icon.svg",
+    "apple-touch-icon": "icon.png",
     "starturl": "index.html",
     "display": "standalone",
     "background_color": "#000000"
