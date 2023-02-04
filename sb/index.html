@@ -166,6 +166,12 @@
             border: 0;
             border-top: 1px solid #ccc;
         }
+
+        #save {
+            border: none;
+            font-size: xx-small;
+            opacity: 0.1;
+        }
     </style>
 </head>
 
@@ -175,6 +181,8 @@
         <div id="logo">
             <img src="icon.svg" alt="logo" width="35">
             <h1>Sandwich Box</h1>
+            <!-- little button -->
+            <a href="#" id="save" hidden>🍏</a>
         </div>
         <div class="menu">
             <a href="#" id="clear"> RESET </a>
@@ -306,19 +314,19 @@
                             ${historyPromptStr}
                         </div>
                     </div>
-                    <div style="display: flex; flex-direction: row; justify-content: flex-start;">
+                    <div style="display: flex; flex-direction: row; justify-content: flex-start;" id="recentText">
                         <pre style="background: #f1f1f1; padding: 10px; border-radius: 4px; margin: 10px; max-width: 80%;">
                             ${text}
                         </pre>
                     </div>
                 `;
+                document.getElementById('save').style.display = 'block';
                 // conversation history
                 chatHistory = promptStr + text + '<|im_sep|>';
                 // console.log(chatHistory);
-                console.log(promptStr + text);
                 // clear prompt
                 form.text.value = '';
-
+                return text;
             });
         });
         document.onkeypress = function (e) {
@@ -331,6 +339,49 @@
             chatHistory = '';
             result.innerHTML = '';
         });
+        // function save to http api
+        document.getElementById('save').addEventListener('click', function () {
+            document.getElementById('save').style.display = 'none';
+            var saveText = window.promptStr + document.getElementById('recentText').innerText;
+            saveText = saveText.split('<|im_end|>')[1];
+            saveText = saveText.replace(/^\s+|\s+$/g, '');
+            // 获取<|im_sep|>前的内容
+            var title = saveText.split('<|im_sep|>')[0];
+            // 删除所有的空格和换行
+            title = title.replace(/\s+/g, '');
+            // 只保留You:之后的部分
+            title = title.replace(/You:/g, '');
+            // 删除所有的标点符号
+            title = title.replace(/[^\u4e00-\u9fa5]/g, '');
+            // 判断如果不是英文
+            if (!/^[a-zA-Z]+$/.test(title)) {
+
+                title = 'No English Title';
+            } else {
+                title = title.substring(0, 20);
+            }
+            saveText = saveText.replace(/<\|im_sep\|>/g, '\n');
+            saveText = saveText.replace(/<\|im_end\|>/g, '\n');
+            console.log(saveText);
+            console.log(title);
+            // fetch() post request to pipedream api
+            fetch('https://eoehbx03hkglojd.m.pipedream.net', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    'title': title,
+                    'content': saveText
+                })
+            }).then(function (response) {
+                return response.text();
+            }).then(function (text) {
+                console.log(text);
+            });
+
+        });
+
     </script>
 
 </body>
