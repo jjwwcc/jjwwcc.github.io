@@ -342,26 +342,30 @@
         // function save to http api
         document.getElementById('save').addEventListener('click', function () {
             document.getElementById('save').style.display = 'none';
+            // current time hhmmss
+            var time = new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric",
+                second: "numeric"
+            });
             var saveText = window.promptStr + document.getElementById('recentText').innerText;
             saveText = saveText.split('<|im_end|>')[1];
             saveText = saveText.replace(/^\s+|\s+$/g, '');
             // 获取<|im_sep|>前的内容
             var title = saveText.split('<|im_sep|>')[0];
-            // 删除所有的空格和换行
-            title = title.replace(/\s+/g, '');
+            // 删除所有的换行
+            title = title.replace(/\n/g, '');
             // 只保留You:之后的部分
             title = title.replace(/You:/g, '');
-            // 删除所有的标点符号
-            title = title.replace(/[^\u4e00-\u9fa5]/g, '');
-            // 判断如果不是英文
-            if (!/^[a-zA-Z]+$/.test(title)) {
-
-                title = 'No English Title';
-            } else {
-                title = title.substring(0, 20);
-            }
+            // 在saveText前加上 # title
+            saveText = '# ' + title + '\n' + saveText;
             saveText = saveText.replace(/<\|im_sep\|>/g, '\n');
             saveText = saveText.replace(/<\|im_end\|>/g, '\n');
+            // 将You: 改为"问"
+            saveText = saveText.replace(/You:/g, 'Ask:');
+            // 将ChatGPT: 改为"答"
+            saveText = saveText.replace(/ChatGPT:/g, 'Answer:');
             console.log(saveText);
             console.log(title);
             // fetch() post request to pipedream api
@@ -371,7 +375,7 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    'title': title,
+                    'title': 'saveText' + time,
                     'content': saveText
                 })
             }).then(function (response) {
