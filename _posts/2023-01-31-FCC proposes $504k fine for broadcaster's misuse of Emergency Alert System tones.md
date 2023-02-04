@@ -1,2 +1,0 @@
-# FCC proposes $504k fine for broadcaster's misuse of Emergency Alert System tones 
- <https://www.insideradio.com/free/fox-sports-admits-it-used-fake-eas-tones-on-radio-as-well-as-tv/article_6b18d2f0-9e1c-11ed-ab28-c7b167cea819.html>
