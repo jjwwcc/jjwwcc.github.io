@@ -1,1 +1,1 @@
-_*A child’s thoughts, assignments, exercises, notes*_
+_ Some questions and answers from ChatGPT. _
