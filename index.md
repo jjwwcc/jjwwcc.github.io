@@ -1,1 +1,1 @@
-_* Some questions and answers from ChatGPT. *_
+_* Some questions and answers from machine. *_
