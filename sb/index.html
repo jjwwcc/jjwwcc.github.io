@@ -200,6 +200,9 @@
         <label for="token">API keys (Get it from https://beta.openai.com/account/api-keys):</label>
         <!-- 一个填写token的input -->
         <input type="text" name="token" value="">
+        <!-- API model -->
+        <label for="model">Model:</label>
+        <input type="text" name="model" value="text-davinci-003">
         <label for="text">Prompt:</label>
         <!-- 多行的文本框 -->
         <textarea name="text" id="" name="text" cols="30" rows="10"></textarea>
@@ -221,6 +224,8 @@
             // 隐藏token输入框和label
             document.querySelector('input[name="token"]').style.display = 'none';
             document.querySelector('label[for="token"]').style.display = 'none';
+            document.querySelector('input[name="model"]').style.display = 'none';
+            document.querySelector('label[for="model"]').style.display = 'none';
         }
         // 获取表单
         var form = document.querySelector('form');
@@ -273,7 +278,7 @@
                     'Authorization': 'Bearer ' + data.get('token')
                 },
                 body: JSON.stringify({
-                    'model': 'text-chat-davinci-002-20221122',
+                    'model': data.get('model'),
                     'prompt': promptStr,
                     'max_tokens': 1000,
                     'temperature': 0.9
@@ -327,6 +332,9 @@
                 // clear prompt
                 form.text.value = '';
                 return text;
+            }).catch(function (error) {
+                // 如果出错，就提示用户
+                error.innerHTML = error;
             });
         });
         document.onkeypress = function (e) {
