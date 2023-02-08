@@ -269,6 +269,8 @@
             error.innerHTML = ' ';
             gptMsg.style.display = 'block';
             gptMsg.innerHTML = '<div style="padding: 15px;">Generating...</div>';
+            // promptSubmit show Generating
+            document.getElementById('promptSubmit').value = 'Generating...';
             // console.log(promptStr);
             // 发送请求
             fetch('https://api.openai.com/v1/completions', {
@@ -290,6 +292,22 @@
                 gptMsg.innerHTML = ' ';
                 document.querySelector('input[name="token"]').style.display = 'none';
                 document.querySelector('label[for="token"]').style.display = 'none';
+                document.querySelector('input[name="model"]').style.display = 'none';
+                document.querySelector('label[for="model"]').style.display = 'none';
+                // webpage title flash 3 times
+                var title = document.title;
+                var i = 0;
+                var timer = setInterval(function () {
+                    i++;
+                    if (i % 2 === 0) {
+                        document.title = '🍏' + title;
+                    } else {
+                        document.title = '🍎' + title;
+                    }
+                    if (i === 12) {
+                        clearInterval(timer);
+                    }
+                }, 500);
                 var text = JSON.parse(text);
                 // 如果text.choices不存在，就提示用户
                 if (!text.choices) {
@@ -335,6 +353,10 @@
             }).catch(function (error) {
                 // 如果出错，就提示用户
                 error.innerHTML = error;
+                document.querySelector('input[name="token"]').style.display = 'block';
+                document.querySelector('label[for="token"]').style.display = 'block';
+                document.querySelector('input[name="model"]').style.display = 'block';
+                document.querySelector('label[for="model"]').style.display = 'block';
             });
         });
         document.onkeypress = function (e) {
