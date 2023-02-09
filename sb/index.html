@@ -269,8 +269,8 @@
             error.innerHTML = ' ';
             gptMsg.style.display = 'block';
             gptMsg.innerHTML = '<div style="padding: 15px;">Generating...</div>';
-            // promptSubmit show Generating
-            document.getElementById('promptSubmit').value = 'Generating...';
+            // promptSubmit disable
+            document.querySelector('#promptSubmit').disabled = true;
             // console.log(promptStr);
             // 发送请求
             fetch('https://api.openai.com/v1/completions', {
@@ -294,6 +294,7 @@
                 document.querySelector('label[for="token"]').style.display = 'none';
                 document.querySelector('input[name="model"]').style.display = 'none';
                 document.querySelector('label[for="model"]').style.display = 'none';
+                document.querySelector('#promptSubmit').disabled = false;
                 // webpage title flash 3 times
                 var title = document.title;
                 var i = 0;
@@ -306,6 +307,7 @@
                     }
                     if (i === 12) {
                         clearInterval(timer);
+                        document.title = title;
                     }
                 }, 500);
                 var text = JSON.parse(text);
@@ -368,6 +370,8 @@
         document.getElementById('clear').addEventListener('click', function () {
             chatHistory = '';
             result.innerHTML = '';
+            document.getElementById('save').style.display = 'none';
+            document.querySelector('#promptSubmit').disabled = false;
         });
         // function save to http api
         document.getElementById('save').addEventListener('click', function () {
