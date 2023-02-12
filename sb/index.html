@@ -158,6 +158,13 @@
             padding: 0px;
             text-align: center;
             color: red;
+            font-size: 1.0em;
+            position: fixed;
+            top: 55px;
+            left: 0;
+            width: 100%;
+            background: #f1f1f1;
+            display: none;
         }
 
         hr {
@@ -202,7 +209,7 @@
         <input type="text" name="token" value="">
         <!-- API model -->
         <label for="model">Model:</label>
-        <input type="text" name="model" value="text-davinci-003">
+        <input type="text" name="model" value="text-davinci-003" >
         <label for="text">Prompt:</label>
         <!-- 多行的文本框 -->
         <textarea name="text" id="" name="text" cols="30" rows="10"></textarea>
@@ -218,6 +225,7 @@
         var promptStr = '';
         var historyPromptStr = '';
         var token = localStorage.getItem('token');
+        var model = localStorage.getItem('model');
         // 如果token存在，就填入input中
         if (token) {
             document.querySelector('input[name="token"]').value = token;
@@ -263,6 +271,9 @@
             // 如果token不存在，就将token存入localstorage
             if (!token) {
                 localStorage.setItem('token', data.get('token'));
+            }
+            if (!model) {
+                localStorage.setItem('model', data.get('model'));
             }
             // 将结果区域清空
             // result.innerHTML = '';
@@ -313,7 +324,9 @@
                 var text = JSON.parse(text);
                 // 如果text.choices不存在，就提示用户
                 if (!text.choices) {
+                    error.style.display = 'block';
                     error.innerHTML = text.error.message;
+                    console.log(text.error.message);
                     // 显示token输入框和label
                     document.querySelector('input[name="token"]').style.display = 'block';
                     document.querySelector('label[for="token"]').style.display = 'block';
@@ -321,6 +334,7 @@
                     document.querySelector('label[for="model"]').style.display = 'block';
                     // 清空token
                     localStorage.removeItem('token');
+                    localStorage.removeItem('model');
                     return;
                 }
                 text = text.choices[0].text;
@@ -356,7 +370,6 @@
                 return text;
             }).catch(function (error) {
                 // 如果出错，就提示用户
-                error.innerHTML = error;
                 document.querySelector('input[name="token"]').style.display = 'block';
                 document.querySelector('label[for="token"]').style.display = 'block';
                 document.querySelector('input[name="model"]').style.display = 'block';
