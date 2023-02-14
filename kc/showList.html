@@ -34,7 +34,7 @@
                     <div class="col-md-6">
                         <div class="row">
                             <div class="col-md-8">
-                                <p > Item No </p>
+                                <p> Item No </p>
                             </div>
                             <div class="col-md-4">
                                 <p> Quantity </p>
@@ -85,11 +85,39 @@
             // get quantity
             var quantity = itemNoJson[i].quantity;
             // create li to show the information
-            var li = '<li class="list-group-item" draggable="true"><div class="row"><div class="col-md-4"><img src="' + imgUrl + '" class="img-fluid" alt="Responsive image"></div><div class="col-md-8"><div class="row"><div class="col-md-6"><p>' + itemNo + '</p></div><div class="col-md-6"><p>' + quantity + '</p></div></div></div></div></li>';
-            // append li to ul
+            // create li to show the information
+            var li = `<li class="list-group-item" draggable="true">
+              <div class="row">
+                  <div class="col-md-4">
+                      <img src="${imgUrl}" class="img-fluid" alt="Responsive image">
+                  </div>
+                  <div class="col-md-8">
+                      <div class="row">
+                          <div class="col-md-3">
+                              <p>${itemNo}</p>
+                          </div>
+                                <div class="col-md-3">
+                                    ${quantity}
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="number" id="price_${itemNo}" class="form-control">
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-primary" onclick=updatePrice(${JSON.stringify(itemNo)})>Submit</button>
+                                </div>
+                      </div>
+                  </div>
+              </div>
+          </li>`;
             $('.list-group').append(li);
-        }
 
+            // var li = '<li class="list-group-item" draggable="true"><div class="row"><div class="col-md-4"><img src="'
+            //     + imgUrl + '" class="img-fluid" alt="Responsive image"></div><div class="col-md-8"><div class="row"><div class="col-md-3"><p>'
+            //     + itemNo + '</p></div><div class="col-md-3"><p>'
+            //     + quantity + '</p></div><div class="col-md-3"><input type="number" id="price_' + itemNo + '" class="form-control" placeholder="Enter Price"></div><div class="col-md-3"><button type="button" class="btn btn-primary" onclick="updatePrice(' + JSON.stringify(itemNo) + ')">Submit</button></div></div></div></div></li>';
+            // // append li to ul
+            // $('.list-group').append(li);
+        }
         $(document).ready(function () {
             $(".list-group").sortable({
                 revert: true,
@@ -145,7 +173,20 @@
             // click the link
             link.click();
         }
-                
+
+        function updatePrice(itemNo) {
+            var price = document.getElementById("price_" + itemNo).value;
+            // http get https://www.frontwinner.com/shipping/modify.php?c=PNPL8668&price=10.99&sale=1
+            var url = 'https://www.frontwinner.com/shipping/modify.php?c=' + itemNo + '&price=' + price + '&sale=1';
+            // create a link
+            var link = document.createElement('a');
+            link.href = url;
+            link.target = '_blank';
+            link.click();
+            // change input color
+            document.getElementById("price_" + itemNo).style.backgroundColor = "green";
+        }
+
     </script>
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"

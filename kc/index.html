@@ -11,8 +11,6 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <!-- font awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <!-- custom css -->
-    <link rel="stylesheet" href="css/style.css">
     <title>item no machine</title>
 </head>
 
@@ -58,6 +56,8 @@
                 var itemNo = itemNoArray[i];
                 // remove the space from item no
                 itemNo = itemNo.replace(/\s/g, '');
+                // if Chinese ： is used, change it to English :
+                itemNo = itemNo.replace(/：/g, ':');
                 // check if item no is empty
                 if (itemNo != '') {
                     // get before : text as item no
