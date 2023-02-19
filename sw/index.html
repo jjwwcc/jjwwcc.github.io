@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Web Stopwatch</title>
+    <style>
+        body {
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        #stopwatch {
+            background-color: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            height: 240px;
+            justify-content: center;
+            margin: 64px auto 0;
+            position: relative;
+            width: 240px;
+        }
+
+        #stopwatch:after {
+            background-color: #000000;
+            border-radius: 50%;
+            content: '';
+            height: 8px;
+            position: absolute;
+            top: 116px;
+            width: 8px;
+        }
+
+        #stopwatch:before {
+            background-color: #000000;
+            border-radius: 50%;
+            content: '';
+            height: 16px;
+            position: absolute;
+            top: 108px;
+            width: 16px;
+        }
+
+        #stopwatch .time {
+            color: #000000;
+            font-size: 48px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        #stopwatch .button {
+            background-color: #000000;
+            border-radius: 50%;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            height: 64px;
+            margin: 32px 8px 0;
+            text-align: center;
+            width: 64px;
+        }
+
+        #stopwatch .button:hover {
+            background-color: #333333;
+        }
+
+        #stopwatch .button:active {
+            background-color: #666666;
+        }
+
+        #stopwatch .controls {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="stopwatch">
+        <h1 class="time">00:00</h1>
+        <div class="controls">
+            <button class="button" id="start">Start</button>
+            <button class="button" id="pause">Pause</button>
+            <button class="button" id="reset">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        const timeDisplay = document.querySelector('.time');
+        let startTime;
+        let elapsedTime = 0;
+        let intervalId;
+
+        function startTimer() {
+            startTime = Date.now() - elapsedTime;
+            intervalId = setInterval(updateTimer, 1000);
+            toggleButtons(true);
+        }
+
+        function pauseTimer() {
+            elapsedTime = Date.now() - startTime;
+            clearInterval(intervalId);
+            toggleButtons(false);
+        }
+
+        function resetTimer() {
+            clearInterval(intervalId);
+            elapsedTime = 0;
+            timeDisplay.textContent = '00:00';
+            toggleButtons(false);
+        }
+
+        function updateTimer() {
+            elapsedTime = Date.now() - startTime;
+            const minutes = Math.floor(elapsedTime / 60000);
+            const seconds = Math.floor((elapsedTime - minutes * 60000) / 1000);
+            timeDisplay.textContent = `${padTime(minutes)}:${padTime(seconds)}`;
+        }
+
+        function toggleButtons(isRunning) {
+            document.getElementById('start').disabled = isRunning;
+            document.getElementById('pause').disabled = !isRunning;
+            document.getElementById('reset').disabled = isRunning;
+        }
+
+        function padTime(time) {
+            return time < 10 ? `0${time}` : time;
+        }
+
+        document.getElementById('start').addEventListener('click', startTimer);
+        document.getElementById('pause').addEventListener('click', pauseTimer);
+        document.getElementById('reset').addEventListener('click', resetTimer);
+
+    </script>
+</body>
+
+</html>
