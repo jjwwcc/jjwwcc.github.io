@@ -68,16 +68,16 @@
         "quantity": "130"
     },
     {
-        "item_no": "DMPL9006",
-        "quantity": "60"
+        "item_no": "DMPL9006：60",
+        "quantity": "undefined"
     },
     {
-        "item_no": "KGHT8037",
-        "quantity": "30"
+        "item_no": "KGHT8037：30",
+        "quantity": "undefined"
     },
     {
-        "item_no": "FLHP9001",
-        "quantity": "15"
+        "item_no": "FLHP9001：15",
+        "quantity": "undefined"
     },
     {
         "item_no": "PNPL8363",
@@ -92,8 +92,8 @@
         "quantity": "140"
     },
     {
-        "item_no": "PNPL2523",
-        "quantity": "60"
+        "item_no": "PNPL2523：60",
+        "quantity": "undefined"
     },
     {
         "item_no": "DAPL8030",
@@ -281,62 +281,10 @@
     },
     {
         "item_no": "PNPL2256",
-        "quantity": "10"
+        "quantity": ""
     },
     {
         "item_no": "PNPL5327",
         "quantity": "30"
-    },
-    {
-        "item_no": "PNPL8311",
-        "quantity": "50"
-    },
-    {
-        "item_no": "PNPL1065",
-        "quantity": "50"
-    },
-    {
-        "item_no": "PNPL8215",
-        "quantity": "60"
-    },
-    {
-        "item_no": "HAPL0006",
-        "quantity": "8"
-    },
-    {
-        "item_no": "OPPL8002",
-        "quantity": "30"
-    },
-    {
-        "item_no": "POPL9889",
-        "quantity": "23"
-    },
-    {
-        "item_no": "DAPL8041",
-        "quantity": "50"
-    },
-    {
-        "item_no": "PNPL9405",
-        "quantity": "30"
-    },
-    {
-        "item_no": "PNPL1399",
-        "quantity": "30"
-    },
-    {
-        "item_no": "PNPL3288",
-        "quantity": "20"
-    },
-    {
-        "item_no": "PNPL5021",
-        "quantity": "50"
-    },
-    {
-        "item_no": "HAPL8001",
-        "quantity": "20"
-    },
-    {
-        "item_no": "DAPL6053",
-        "quantity": "20"
     }
 ]
