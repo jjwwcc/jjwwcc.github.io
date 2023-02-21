@@ -1,3 +1,5 @@
+# 写了个小玩意儿。。让Siri帮我在Notion上记账（拜托了GPT）
+
 写了个小玩意儿。。让Siri帮我在Notion上记账（拜托了GPT）
 
  {% raw %} 
