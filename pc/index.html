@@ -27,7 +27,7 @@
 
         /* Styles for the content below the header */
         #content {
-            padding: 0 40px;
+            padding: 0 20px;
             margin-top: 100px;
             /* Adjust the margin-top value as needed */
         }
@@ -53,12 +53,12 @@
         /* Styles for menu */
         .menu {
             display: flex;
-            gap: 20px;
+            gap: 10px;
         }
 
         /* Styles for menu links */
         .menu a {
-            font-size: 16px;
+            font-size: 13px;
             font-weight: bold;
             color: #fff;
             text-decoration: none;
@@ -136,7 +136,7 @@
             flex-direction: column;
             margin-top: 20px;
             margin-bottom: 10px;
-            padding: 0 40px;
+            padding: 0 20px;
         }
 
         /* Styles for chat input form labels */
@@ -430,9 +430,8 @@
                     document.documentElement.scrollTop = document.documentElement.scrollHeight;
                 })
                 .catch(error => {
-                    console.error(error);
                     gptMsg.style.display = 'none';
-                    error.innerHTML = 'Something went wrong. Please try again.';
+                    error.innerHTML = error.message;
                     // Show input fields and label elements
                     tokenInput.style.display = 'block';
                     document.querySelector('label[for="token"]').style.display = 'block';
