@@ -151,7 +151,7 @@
         form>input[type="text"],
         form>textarea {
             padding: 10px;
-            border: none;
+            border: 1px solid #ccc;
             background-color: #fff;
             border-radius: 5px;
             font-size: 16px;
@@ -163,7 +163,7 @@
         form>input[type="submit"] {
             margin-top: 10px;
             padding: 10px;
-            border: none;
+            border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 16px;
             font-weight: bold;
@@ -227,6 +227,16 @@
             text-align: center;
             margin-top: 20px;
             font-size: 8px;
+        }
+
+        .copy-btn {
+            margin-left: auto;
+            font-size: 12px;
+            padding: 3px 5px;
+            border: none;
+            background-color: #f5f5f5;
+            cursor: pointer;
+            opacity: 0.4;
         }
     </style>
 </head>
@@ -386,6 +396,7 @@
                         const roleClass = message.role === 'user' ? 'chat-message-user' : 'chat-message-assistant';
                         chatContent += `
                             <div class="chat-message ${roleClass}">
+                            <button class="copy-btn">COPY</button>
                             <pre>${message.content}</pre>
                             <div class="chat-message-meta">
                                 <div>${new Date().toLocaleString()}</div>
@@ -395,6 +406,20 @@
                         `;
                     });
                     chat.innerHTML = chatContent;
+
+                    const copyBtns = document.querySelectorAll('.copy-btn');
+                    copyBtns.forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const pre = btn.nextElementSibling;
+                            const text = pre.innerText;
+                            const textarea = document.createElement('textarea');
+                            textarea.value = text;
+                            document.body.appendChild(textarea);
+                            textarea.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(textarea);
+                        });
+                    });
 
                     // Show save button
                     saveButton.style.display = 'block';
@@ -459,12 +484,13 @@
             })
                 .then(response => response.text())
                 .then(text => {
-                    console.log(text); 
-                    saveButton.style.display = 'none';                   
-                }                
+                    console.log(text);
+                    saveButton.style.display = 'none';
+                }
                 )
                 .catch(error => console.error(error));
         });
+
     </script>
 </body>
 
