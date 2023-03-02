@@ -431,6 +431,7 @@
                 })
                 .catch(error => {
                     console.error(error);
+                    gptMsg.style.display = 'none';
                     error.innerHTML = 'Something went wrong. Please try again.';
                     // Show input fields and label elements
                     tokenInput.style.display = 'block';
