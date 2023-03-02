@@ -441,7 +441,9 @@
                 if (preElement) {
                     const text = preElement.innerText.trim();
                     const sender = message.classList.contains('chat-message-user') ? 'You' : 'Assistant';
-                    formattedChat += `> **${sender}:** ${text}\n\n`;
+                    formattedChat += `**${sender}:** ${text}\n---\n`;
+
+
                 }
             });
             // Send formatted chat to server for saving
@@ -456,7 +458,11 @@
                 })
             })
                 .then(response => response.text())
-                .then(text => console.log(text))
+                .then(text => {
+                    console.log(text); 
+                    saveButton.style.display = 'none';                   
+                }                
+                )
                 .catch(error => console.error(error));
         });
     </script>
