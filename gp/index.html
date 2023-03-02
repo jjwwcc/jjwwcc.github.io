@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="shortcut icon" href="icon.svg" type="image/x-icon">
-    <link rel="apple-touch-icon" href="icon.svg">
+    <link rel="shortcut icon" href="icon.png" type="image/x-icon">
+    <link rel="apple-touch-icon" href="icon.png">
     <link rel="manifest" href="manifest.json">
-    <title>Peach Plate</title>
+    <title>gPeach</title>
     <style>
         /* Styles for header */
         header {
@@ -198,15 +198,23 @@
         pre {
             white-space: pre-wrap;
         }
+
+        #footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+        #footer span {
+            font-size: 6px;
+            color: #e8e1e1;
+        }
     </style>
 </head>
 
 <body>
     <header>
         <div id="logo">
-            <img src="icon.svg" alt="logo" width="35">
-            <h1>Peach Plate</h1>
-            <!-- little button -->
+            <img src="icon.png" alt="logo" width="35">
+            <h1>gPeach</h1>
             <a href="#" id="save" hidden>🍏</a>
         </div>
         <div class="menu">
@@ -218,7 +226,6 @@
     <div id="content">
         <div id="gptMsg"></div>
         <div id="error"></div>
-        <!-- <pre id="result"></pre> -->
         <div id="chat"></div>
     </div>
 
@@ -235,6 +242,9 @@
         <textarea name="text" id="" name="text" cols="30" rows="10"></textarea>
         <input type="submit" value="SUBMIT (Ctrl+Enter)" id="promptSubmit">
     </form>
+    <div id="footer">
+        <p>© 2023 gPeach. All rights reserved.<span>sk-fvUiskq7Zw0LO90HpjF1T3BlbkFJefVd17bQG5nqEQBH6z</span></p>
+    </div>
 
     <script>
         // Cache frequently accessed elements
@@ -303,7 +313,9 @@
 
             form.text.value = '';
             tokenInput.style.display = 'none';
+            document.querySelector('label[for="token"]').style.display = 'none';
             modelInput.style.display = 'none';
+            document.querySelector('label[for="model"]').style.display = 'none';
 
             // Disable submit button
             document.querySelector('#promptSubmit').disabled = true;

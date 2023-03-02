@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="icon.png" type="image/x-icon">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>GPT-3</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            overflow: auto;
+            width: 100%;
+        }
+
+        header {
+            padding: 20px;
+            background: #333;
+            color: #fff;
+            text-align: center;
+        }
+
+        form {
+            padding: 20px;
+            background: #f1f1f1;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+
+        }
+
+        form input {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        form textarea {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        form input[type="submit"] {
+            background: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        pre {
+            padding: 20px;
+            background: #f1f1f1;
+            white-space: pre-wrap;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.9em;
+        }
+
+        code {
+            background: #f1f1f1;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        #result {
+            padding: 20px;
+        }
+
+        #gptMsg {
+            padding: 10px;
+            text-align: center;
+        }
+
+        #error {
+            padding: 0px;
+            text-align: center;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- a header with logo -->
+    <header>
+        <img src="icon.png" alt="logo" width="100">
+    </header>
+
+    <div id="gptMsg"></div>
+    <div id="error"></div>
+    <pre id="result"></pre>
+
+    <!-- 一个信息提交框 -->
+    <form>
+        <label for="token">API keys (Get it from https://beta.openai.com/account/api-keys):</label>
+        <!-- 一个填写token的input -->
+        <input type="text" name="token" value="">
+        <label for="text">Prompt:</label>
+        <!-- 多行的文本框 -->
+        <textarea name="text" id="" name="text" cols="30" rows="10"></textarea>
+        <input type="submit" value="SUBMIT">
+    </form>
+    <script>
+        // 从localstorage中获取token
+        var token = localStorage.getItem('token');
+        // 如果token存在，就填入input中
+        if (token) {
+            document.querySelector('input[name="token"]').value = token;
+            // 隐藏token输入框和label
+            document.querySelector('input[name="token"]').style.display = 'none';
+            document.querySelector('label[for="token"]').style.display = 'none';
+        }
+        // 获取表单
+        var form = document.querySelector('form');
+        // 获取结果显示区域
+        var result = document.querySelector('#result');
+        // 绑定表单提交事件
+        form.addEventListener('submit', function (e) {
+            // 表单token和text不能为空
+            if (!form.token.value || !form.text.value) {
+                // 如果token或text为空，就提示用户
+                error.innerHTML = 'Token and text cannot be empty.';
+                return;
+
+            }
+            // 阻止表单默认提交行为
+            e.preventDefault();
+            // 获取表单数据
+            var data = new FormData(form);
+            // 如果token不存在，就将token存入localstorage
+            if (!token) {
+                localStorage.setItem('token', data.get('token'));
+            }
+            // 将结果区域清空
+            result.innerHTML = '';
+            error.innerHTML = ' ';
+            gptMsg.innerHTML = 'Generating...';
+            // 发送请求
+            fetch('https://api.openai.com/v1/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + data.get('token')
+                },
+                body: JSON.stringify({
+                    'model': 'text-davinci-003',
+                    'prompt': data.get('text'),
+                    'max_tokens': 1000,
+                    'temperature': 0.9
+                })
+            }).then(function (response) {
+                // 获取响应数据
+                return response.text();
+            }).then(function (text) {
+                gptMsg.innerHTML = ' ';
+                document.querySelector('input[name="token"]').style.display = 'none';
+                document.querySelector('label[for="token"]').style.display = 'none';
+                var text = JSON.parse(text);
+                // 如果text.choices不存在，就提示用户
+                if (!text.choices) {
+                    error.innerHTML = text.error.message;
+                    // 显示token输入框和label
+                    document.querySelector('input[name="token"]').style.display = 'block';
+                    document.querySelector('label[for="token"]').style.display = 'block';
+                    // 清空token
+                    localStorage.removeItem('token');
+                    return;
+                }
+                text = text.choices[0].text;
+                // 避免渲染html
+                text = text.replace(/</g, '&lt;');
+                text = text.replace(/>/g, '&gt;');
+                result.innerHTML = text;
+            });
+        });
+    </script>
+
+</body>
+
+</html>
