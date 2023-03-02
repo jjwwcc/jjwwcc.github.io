@@ -1,0 +1,14 @@
+{
+    "name": "Peach Tree",
+    "shortname": "Peach Tree",
+    "icons": [
+        {
+            "src": "icon.svg",
+            "sizes": "60x60"
+        }
+    ],
+    "apple-touch-icon": "icon.svg",
+    "starturl": "index.html",
+    "display": "standalone",
+    "background_color": "#000000"
+}
