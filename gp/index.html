@@ -15,7 +15,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
+            padding: 5px;
             background-color: #333;
             color: #fff;
             position: fixed;
@@ -45,7 +45,7 @@
 
         /* Styles for logo title */
         #logo h1 {
-            font-size: 24px;
+            font-size: 21px;
             font-weight: bold;
             color: #fff;
         }
@@ -197,6 +197,30 @@
 
         pre {
             white-space: pre-wrap;
+        }
+
+        #gptMsg {
+            text-align: center;
+            position: fixed;
+            top: 55px;
+            left: 0;
+            width: 100%;
+            background: #1e542a;
+            color: #fff;
+            display: none;
+            font-size: 1.0em;
+        }
+
+        #error {
+            text-align: center;
+            position: fixed;
+            top: 55px;
+            left: 0;
+            width: 100%;
+            background: #ff0000;
+            color: #fff;
+            display: none;
+            font-size: 1.0em;
         }
 
         #footer {
@@ -381,7 +405,7 @@
                 })
                 .catch(error => {
                     console.error(error);
-
+                    error.innerHTML = 'Something went wrong. Please try again.';
                     // Show input fields and label elements
                     tokenInput.style.display = 'block';
                     document.querySelector('label[for="token"]').style.display = 'block';
