@@ -1,4 +1,4 @@
-# > **You:** chatGPT api 还有什么好主意？
+# chatGPT api 还有什么好主意？
 
 > **Assistant:** 以下是一些关于ChatGPT API的好主意：
 
