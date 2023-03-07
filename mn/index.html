@@ -313,13 +313,14 @@
             document.querySelector('#promptSubmit').disabled = true;
 
             // Make request to OpenAI API
-            fetch('http://139.162.85.241:3001/api/chat', {
+            fetch('https://eoar45al41syrz4.m.pipedream.net/api', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'uuid': '36a1aea0-4218-4a90-a2d9-7132e39243cc'
                 },
                 body: JSON.stringify({
-                    model,
+                    // model,
                     messages
                 })
             })
