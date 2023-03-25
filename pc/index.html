@@ -249,7 +249,7 @@
             <a href="#" id="save" hidden>🍏</a>
         </div>
         <div class="menu">
-            <a href="#" id="clear"> RESET </a>
+            <a href="#" id="clear">RESET (ESC)</a>
             <a href="https://jjwwcc.github.io/chat" target="_blank"> CONTACT </a>
         </div>
     </header>
@@ -257,7 +257,8 @@
     <div id="content">
         <div id="gptMsg"></div>
         <div id="error"></div>
-        <div id="chat"></div>
+        <div id="chat">
+        </div>
     </div>
 
     <form>
@@ -285,8 +286,8 @@
 
         // current date
         const today = new Date();
-        const dateString = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
-        const timeStamp = `${today.getHours()}-${today.getMinutes()}-${today.getSeconds()}`;
+        const dateString = `${today.getMonth() + 1}-${today.getDate()}-${today.getFullYear()}`;
+        const timeStamp = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
 
         // Get data from localstorage
         let token = localStorage.getItem('token');
@@ -312,6 +313,7 @@
             const token = formData.get('token');
             const model = formData.get('model');
             const prompt = formData.get('text').trim();
+            var deltaMsg = '';
 
             // Check if token and prompt are not empty
             if (!token || !prompt) {
@@ -347,6 +349,18 @@
             // Disable submit button
             document.querySelector('#promptSubmit').disabled = true;
 
+            // create div chat-message chat-message-user and append it to chat
+            const userMsgDiv = document.createElement('div');
+            userMsgDiv.classList.add('chat-message', 'chat-message-user');
+            userMsgDiv.innerHTML = `<button class="copy-btn">COPY</button><pre>${promptText}</pre><div class="chat-message-meta"><div>${dateString} ${timeStamp}</div><div>You</div></div>`;
+            chat.appendChild(userMsgDiv);
+
+            // create div chat-message chat-message-assistant and append it to chat
+            const assistantMsg = document.createElement('div');
+            assistantMsg.classList.add('chat-message', 'chat-message-assistant');
+            assistantMsg.innerHTML = `<button class="copy-btn">COPY</button><pre>Generating...</pre><div class="chat-message-meta"><div>${dateString} ${timeStamp}</div><div>Assistant</div></div>`;
+            chat.appendChild(assistantMsg);
+
             // Make request to OpenAI API
             fetch('https://api.openai.com/v1/chat/completions', {
                 method: 'POST',
@@ -356,56 +370,65 @@
                 },
                 body: JSON.stringify({
                     model,
-                    messages
+                    messages,
+                    stream: true
                 })
             })
-                .then(response => response.json())
-                .then(response => {
-                    // Clear generating message
-                    gptMsg.innerHTML = '';
-                    error.innerHTML = '';
-                    // Enable submit button
-                    document.querySelector('#promptSubmit').disabled = false;
+                .then(response => response.body)
+                .then(body => {
+                    const reader = body.getReader();
 
-                    // Handle error response
-                    if (response.error) {
-                        error.innerHTML = response.error.message;
+                    function readChunk() {
+                        return reader.read().then(({ done, value }) => {
+                            if (done) {
+                                return;
+                            }
 
-                        // Show input fields and label elements
-                        tokenInput.style.display = 'block';
-                        document.querySelector('label[for="token"]').style.display = 'block';
-                        modelInput.style.display = 'block';
-                        document.querySelector('label[for="model"]').style.display = 'block';
-
-                        // Clear local storage
-                        localStorage.removeItem('token');
-                        localStorage.removeItem('model');
-                        return;
+                            const text = new TextDecoder("utf-8").decode(value);
+                            // 根据换行符分割数据块
+                            const textArray = text.split('\n');
+                            var fixedMsg;
+                            textArray.forEach((item) => {
+                                fixedMsg = item.replace(/^data: /, '');
+                                try {
+                                    textJson = JSON.parse(fixedMsg);
+                                    textJson.choices.forEach((choice) => {
+                                        if (!choice.delta.content) {
+                                            return;
+                                        }
+                                        deltaMsg += choice.delta.content;
+                                        const allPre = document.getElementsByTagName('pre');
+                                        const lastPre = allPre[allPre.length - 1];
+                                        lastPre.innerText = deltaMsg;
+                                        // handle error response
+                                        if (textJson.error) {
+                                            error.innerHTML = textJson.error.message;
+                                            // show input fields and label elements
+                                            tokenInput.style.display = 'block';
+                                            document.querySelector('label[for="token"]').style.display = 'block';
+                                            modelInput.style.display = 'block';
+                                            document.querySelector('label[for="model"]').style.display = 'block';
+                                            // clear local storage
+                                            localStorage.clear();
+                                        }
+                                    });
+                                    if (textJson.choices[0].finish_reason == 'stop') {
+                                        messages.push({ role: 'assistant', content: deltaMsg });
+                                        // clear generating message
+                                        gptMsg.innerHTML = '';
+                                        error.innerHTML = '';
+                                        // enable submit button
+                                        document.querySelector('#promptSubmit').disabled = false;
+                                    }
+                                } catch (e) {
+                                    return;
+                                }
+                            });
+                            // 继续读取更多数据并递归调用
+                            return readChunk();
+                        });
                     }
-
-                    // Add assistant message to messages array
-                    const assistantMsg = { role: 'assistant', content: response.choices[0].message.content };
-                    messages.push(assistantMsg);
-
-                    // Render messages to chat
-                    let chatContent = '';
-                    messages.forEach(message => {
-                        if (message.role === 'system') {
-                            return;
-                        }
-                        const roleClass = message.role === 'user' ? 'chat-message-user' : 'chat-message-assistant';
-                        chatContent += `
-                            <div class="chat-message ${roleClass}">
-                            <button class="copy-btn">COPY</button>
-                            <pre>${message.content}</pre>
-                            <div class="chat-message-meta">
-                                <div>${new Date().toLocaleString()}</div>
-                                <div>${message.role === 'user' ? 'You' : 'Assistant'}</div>
-                            </div>
-                            </div>
-                        `;
-                    });
-                    chat.innerHTML = chatContent;
+                    readChunk();
 
                     const copyBtns = document.querySelectorAll('.copy-btn');
                     copyBtns.forEach(btn => {
@@ -457,6 +480,13 @@
             document.querySelector('#promptSubmit').disabled = false;
         });
 
+        // ESC key to clear chat
+        document.onkeydown = function (e) {
+            if (e.keyCode === 27) {
+                document.getElementById('clear').click();
+            }
+        };
+
         // Bind save button click event
         document.getElementById('save').addEventListener('click', function () {
             const chatContainer = document.getElementById('chat');
@@ -468,8 +498,6 @@
                     const text = preElement.innerText.trim();
                     const sender = message.classList.contains('chat-message-user') ? 'You' : 'Assistant';
                     formattedChat += `**${sender}:** ${text}\n---\n`;
-
-
                 }
             });
             // Send formatted chat to server for saving
