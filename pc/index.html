@@ -577,6 +577,8 @@
             recognition.onend = function () {
                 recognizing = false;
                 btnSpeak.innerText = '🔴';
+                // submit 
+                document.getElementById('promptSubmit').click();
             };
         } else {
             alert('Speech recognition is not supported in this browser.');
