@@ -560,6 +560,9 @@
                 recognition.start();
                 recognizing = true;
                 btnSpeak.innerText = '⏸️';
+                if (responsiveVoice.isPlaying()) {
+                    responsiveVoice.cancel();
+                }
             });
 
             recognition.onresult = function (event) {
