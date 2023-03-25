@@ -467,7 +467,15 @@
                                                 responsiveVoice.cancel();
                                             }
                                             responsiveVoice.speak(deltaMsg, 'US English Male', { rate: 1.5 });
-                                            // 'US English Male',
+                                            // android chrome webkit
+                                            const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+                                            if (isPortrait) {
+                                                var phoneVoice = new SpeechSynthesisUtterance();
+                                                phoneVoice.text = deltaMsg;
+                                                window.speechSynthesis.speak(phoneVoice);
+
+                                            }
+
                                         }
                                     }
                                 } catch (e) {
