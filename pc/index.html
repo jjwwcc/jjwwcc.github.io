@@ -8,6 +8,8 @@
     <link rel="shortcut icon" href="icon.png" type="image/x-icon">
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="manifest" href="manifest.json">
+    <!-- js -->
+    <script src="responsivevoice.js"></script>
     <title>PeachCanned</title>
     <style>
         /* Styles for header */
@@ -238,6 +240,38 @@
             cursor: pointer;
             opacity: 0.4;
         }
+
+        #btnSpeak {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px;
+            border-radius: 50%;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #0c0902dc;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        #btnSpeak:hover {
+            transform: scale(1.1);
+        }
+
+        #voice {
+            color: #cac8c8;
+            font-size: smaller;
+        }
+
+        #voiceOn {
+            margin-right: 5px;
+        }
+
+        #voiceOn:checked+label {
+            color: #bdbcba;
+        }
     </style>
 </head>
 
@@ -247,6 +281,7 @@
             <img src="icon.png" alt="logo" width="35">
             <h1>PeachCanned</h1>
             <a href="#" id="save" hidden>🍏</a>
+            <button id="btnSpeak">🔴</button>
         </div>
         <div class="menu">
             <a href="#" id="clear">RESET (ESC)</a>
@@ -258,6 +293,11 @@
         <div id="gptMsg"></div>
         <div id="error"></div>
         <div id="chat">
+            <div id="voice">
+                <input type="checkbox" id="voiceOn" name="voiceOn" value="voiceOn">
+                <label for="voiceOn">Voice On</label>
+            </div>
+
         </div>
     </div>
 
@@ -267,7 +307,7 @@
         <label for="model">Model:</label>
         <input type="text" name="model" value="gpt-3.5-turbo">
         <label for="text">Prompt:</label>
-        <textarea name="text" id="" name="text" cols="30" rows="10"></textarea>
+        <textarea name="text" id="promptInput" cols="30" rows="10" x-webkit-speech></textarea>
         <input type="submit" value="SUBMIT (Ctrl+Enter)" id="promptSubmit">
     </form>
     <div id="footer">
@@ -419,6 +459,16 @@
                                         error.innerHTML = '';
                                         // enable submit button
                                         document.querySelector('#promptSubmit').disabled = false;
+                                        // if voiceOn is true, speak by using responsiveVoice
+                                        var voiceOn = document.getElementById('voiceOn').checked;
+                                        if (voiceOn) {
+                                            // speak by using responsiveVoice
+                                            if (responsiveVoice.isPlaying()) {
+                                                responsiveVoice.cancel();
+                                            }
+                                            responsiveVoice.speak(deltaMsg, 'US English Male', { rate: 1.5 });
+                                            // 'US English Male',
+                                        }
                                     }
                                 } catch (e) {
                                     return;
@@ -445,8 +495,8 @@
                         });
                     });
 
-                    // Show save button
-                    saveButton.style.display = 'block';
+                    // // Show save button
+                    // saveButton.style.display = 'block';
 
                     // Clear prompt textarea
                     form.text.value = '';
@@ -479,6 +529,47 @@
             saveButton.style.display = 'none';
             document.querySelector('#promptSubmit').disabled = false;
         });
+
+        if ('webkitSpeechRecognition' in window) {
+            var recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'auto';
+
+            var recognizing = false;
+            var promptInput = document.getElementById('promptInput');
+            var btnSpeak = document.getElementById('btnSpeak');
+
+            btnSpeak.addEventListener('click', function () {
+                if (recognizing) {
+                    recognition.stop();
+                    recognizing = false;
+                    btnSpeak.innerText = '🔴';
+                    return;
+                }
+
+                promptInput.value = '';
+
+                recognition.start();
+                recognizing = true;
+                btnSpeak.innerText = '⏸️';
+            });
+
+            recognition.onresult = function (event) {
+                var speechResult = event.results[0][0].transcript;
+                promptInput.value = speechResult;
+            };
+
+            recognition.onerror = function (event) {
+                recognizing = false;
+            };
+
+            recognition.onend = function () {
+                recognizing = false;
+            };
+        } else {
+            alert('Speech recognition is not supported in this browser.');
+        }
 
         // ESC key to clear chat
         document.onkeydown = function (e) {
