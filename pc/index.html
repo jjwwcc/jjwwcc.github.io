@@ -591,6 +591,13 @@
             }
         };
 
+        // ctrl+space to btnSpeak
+        document.onkeydown = function (e) {
+            if (e.ctrlKey && e.keyCode === 32) {
+                document.getElementById('btnSpeak').click();
+            }
+        };
+
         // Bind save button click event
         document.getElementById('save').addEventListener('click', function () {
             const chatContainer = document.getElementById('chat');
