@@ -563,6 +563,10 @@
                 if (responsiveVoice.isPlaying()) {
                     responsiveVoice.cancel();
                 }
+                if (window.speechSynthesis.speaking) {
+                    window.speechSynthesis.cancel();
+                }
+
             });
 
             recognition.onresult = function (event) {
