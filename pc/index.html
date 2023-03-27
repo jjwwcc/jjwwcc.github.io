@@ -458,6 +458,8 @@
                                         error.innerHTML = '';
                                         // enable submit button
                                         document.querySelector('#promptSubmit').disabled = false;
+                                        // scroll to bottom
+                                        chat.scrollTop = chat.scrollHeight;
                                         // if voiceOn is true, speak by using responsiveVoice
                                         var voiceOn = document.getElementById('voiceOn').checked;
                                         if (voiceOn) {
