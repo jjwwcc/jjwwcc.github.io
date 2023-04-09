@@ -451,13 +451,13 @@
         const timeStamp = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
 
         // Get data from localstorage
-        let token = localStorage.getItem('token');
+        let access_token = localStorage.getItem('access_token');
         let model = localStorage.getItem('model');
         if (model == null) {
             model = 'gpt-3.5-turbo';
         }
 
-        if (token) {
+        if (access_token) {
             document.getElementById('login').style.display = 'none';
             document.getElementById('content').style.display = 'block';
             document.getElementById('promptForm').style.display = 'flex';
@@ -483,13 +483,13 @@
                 }
             }).then(response => response.json())
                 .then(result => {
-                    token = result.access_token;
-                    if (token == null || token == undefined) {
+                    access_token = result.access_token;
+                    if (access_token == null || access_token == undefined) {
                         error.innerHTML = 'Invalid User or Email has not been verified';
                         error.style.display = 'block';
                         return;
                     }
-                    localStorage.setItem('token', token);
+                    localStorage.setItem('access_token', access_token);
                     document.getElementById('login').style.display = 'none';
                     error.style.display = 'none';
                     gptMsg.style.display = 'none';
@@ -541,8 +541,8 @@
             var deltaMsg = '';
 
             // Check if token and prompt are not empty
-            if (!token || !prompt) {
-                error.innerHTML = 'Token and text cannot be empty.';
+            if (!access_token || !prompt) {
+                error.innerHTML = 'access_token and text cannot be empty.';
                 return;
             }
 
@@ -554,8 +554,8 @@
             messages.push(userMsg);
 
             // If token doesn't exist, store it in localstorage
-            if (!localStorage.getItem('token')) {
-                localStorage.setItem('token', token);
+            if (!localStorage.getItem('access_token')) {
+                localStorage.setItem('access_token', access_token);
             }
             if (!localStorage.getItem('model')) {
                 localStorage.setItem('model', model);
@@ -587,7 +587,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${access_token}`
                 },
                 body: JSON.stringify({
                     model,
@@ -624,11 +624,7 @@
                                         // handle error response
                                         if (textJson.error) {
                                             error.innerHTML = textJson.error.message;
-                                            // show input fields and label elements
-                                            tokenInput.style.display = 'block';
-                                            document.querySelector('label[for="token"]').style.display = 'block';
-                                            modelInput.style.display = 'block';
-                                            document.querySelector('label[for="model"]').style.display = 'block';
+                                            error.style.display = 'block';
                                             // clear local storage
                                             localStorage.clear();
                                         }
