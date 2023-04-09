@@ -8,7 +8,7 @@
     <link rel="shortcut icon" href="icon.png" type="image/x-icon">
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="manifest" href="manifest.json">
-    <title>PeachCanned</title>
+    <title>ChatGPT Proxy</title>
     <style>
         /* Styles for header */
         header {
@@ -30,6 +30,7 @@
             padding: 0 20px;
             margin-top: 100px;
             /* Adjust the margin-top value as needed */
+            display: none;
         }
 
         /* Styles for logo container */
@@ -52,7 +53,7 @@
 
         /* Styles for menu */
         .menu {
-            display: flex;
+            display: none;
             gap: 10px;
         }
 
@@ -131,8 +132,8 @@
         }
 
         /* Styles for chat input form */
-        form {
-            display: flex;
+        #promptForm {
+            display: none;
             flex-direction: column;
             margin-top: 20px;
             margin-bottom: 10px;
@@ -140,7 +141,7 @@
         }
 
         /* Styles for chat input form labels */
-        form>label {
+        #promptForm>label {
             margin-bottom: 5px;
             font-size: 14px;
             font-weight: bold;
@@ -148,8 +149,8 @@
         }
 
         /* Styles for chat input form input fields */
-        form>input[type="text"],
-        form>textarea {
+        #promptForm>input[type="text"],
+        #promptForm>textarea {
             padding: 10px;
             border: 1px solid #ccc;
             background-color: #fff;
@@ -160,7 +161,7 @@
         }
 
         /* Styles for chat input form submit button */
-        form>input[type="submit"] {
+        #promptForm>input[type="submit"] {
             margin-top: 10px;
             padding: 10px;
             border: 1px solid #ccc;
@@ -221,6 +222,7 @@
             color: #fff;
             display: none;
             font-size: 1.0em;
+            z-index: 999;
         }
 
         #footer {
@@ -238,6 +240,142 @@
             cursor: pointer;
             opacity: 0.4;
         }
+
+        #reset {
+            color: #cac8c8;
+            font-size: smaller;
+        }
+
+
+        #login {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+        }
+
+        #loginForm {
+            width: 300px;
+            height: 300px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #loginForm h2 {
+            margin: 0;
+            padding: 0;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        #loginForm form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #loginForm form label {
+            margin: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        #loginForm form input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            border-radius: 5px;
+            font-size: 16px;
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #loginForm form input[type="submit"] {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #675636;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        #signupForm {
+            width: 300px;
+            height: 300px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #signupForm h2 {
+            margin: 0;
+            padding: 0;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        #signupForm form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #signupForm form label {
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        #signupForm form input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            border-radius: 5px;
+            font-size: 16px;
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #signupForm form input[type="submit"] {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #675636;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        #signupForm form input[type="submit"]:hover {
+            background-color: #675636;
+        }
+
+        #signupForm form a {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -245,26 +383,53 @@
     <header>
         <div id="logo">
             <img src="icon.png" alt="logo" width="35">
-            <h1>PeachCanned</h1>
-            <a href="#" id="save" hidden>🍏</a>
+            <h1>ChatGPT Proxy</h1>
         </div>
         <div class="menu">
-            <a href="#" id="clear"> RESET </a>
-            <a href="https://jjwwcc.github.io/chat" target="_blank"> CONTACT </a>
+            <a href="#" onclick="logout()"> Logout </a>
         </div>
     </header>
 
-    <div id="content">
-        <div id="gptMsg"></div>
-        <div id="error"></div>
-        <div id="chat"></div>
+    <div id="error"></div>
+    <div id="gptMsg"></div>
+
+    <!-- Login and Signup -->
+    <div id="login">
+        <div id="loginForm">
+            <h2>LOGIN</h2>
+            <form id="login_pc">
+                <label for="email">Email</label>
+                <input type="text" id="email" name="email" placeholder="email" required>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Password" required>
+                <input type="submit" value="LOGIN">
+            </form>
+            <a href="#" onclick="showSignup()">SIGN UP</a>
+        </div>
+        <div id="signupForm">
+            <h2>SIGN UP</h2>
+            <form id="signup_pc">
+                <label for="email">Email</label>
+                <input type="text" id="email" name="email" placeholder="email" required>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Password" required>
+                <input type="submit" value="SIGN UP">
+            </form>
+            <a href="#" onclick="showLogin()">LOGIN</a>
+        </div>
     </div>
 
-    <form>
-        <label for="model" hidden>Model:</label>
-        <input type="text" name="model" value="gpt-3.5-turbo" hidden>
+    <div id="content">
+        <div id="reset">
+            <a href="#" id="clear">RESET (ESC)</a>
+        </div>
+        <div id="chat">
+        </div>
+    </div>
+
+    <form id="promptForm">
         <label for="text">Prompt:</label>
-        <textarea name="text" id="" name="text" cols="30" rows="10"></textarea>
+        <textarea name="text" id="promptInput" cols="30" rows="10" x-webkit-speech></textarea>
         <input type="submit" value="SUBMIT (Ctrl+Enter)" id="promptSubmit">
     </form>
     <div id="footer">
@@ -274,27 +439,112 @@
     <script>
         // Cache frequently accessed elements
         const chat = document.getElementById('chat');
-        const form = document.querySelector('form');
-        const saveButton = document.getElementById('save');
-        const modelInput = document.querySelector('input[name="model"]');
+        const promptForm = document.getElementById('promptForm');
         const error = document.getElementById('error');
         const gptMsg = document.getElementById('gptMsg');
+        const loginForm = document.getElementById('login_pc');
+        const signupForm = document.getElementById('signup_pc');
 
         // current date
         const today = new Date();
-        const dateString = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
-        const timeStamp = `${today.getHours()}-${today.getMinutes()}-${today.getSeconds()}`;
+        const dateString = `${today.getMonth() + 1}-${today.getDate()}-${today.getFullYear()}`;
+        const timeStamp = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
+
+        // Get data from localstorage
+        let token = localStorage.getItem('token');
+        let model = localStorage.getItem('model');
+        if (model == null) {
+            model = 'gpt-3.5-turbo';
+        }
+
+        if (token) {
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+            document.getElementById('promptForm').style.display = 'flex';
+            document.querySelector('.menu').style.display = 'flex';
+        }
+
+        loginForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(loginForm);
+            const email = formData.get('email');
+            const password = formData.get('password');
+            const user = {
+                email,
+                password
+            };
+            fetch('https://orange-mud-f9b8.jjwwcc3115.workers.dev/login', {
+                method: 'POST',
+                body: JSON.stringify(user),
+                headers: {
+                    'content-type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                    'mode': 'no-cors'
+                }
+            }).then(response => response.json())
+                .then(result => {
+                    token = result.access_token;
+                    if (token == null || token == undefined) {
+                        error.innerHTML = 'Invalid User or Email has not been verified';
+                        error.style.display = 'block';
+                        return;
+                    }
+                    localStorage.setItem('token', token);
+                    document.getElementById('login').style.display = 'none';
+                    error.style.display = 'none';
+                    gptMsg.style.display = 'none';
+                    document.getElementById('content').style.display = 'block';
+                    document.getElementById('promptForm').style.display = 'flex';
+                    document.querySelector('.menu').style.display = 'flex';
+                });
+        });
+
+        signupForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(signupForm);
+            const email = formData.get('email');
+            const password = formData.get('password');
+            const user = {
+                email,
+                password
+            };
+            fetch('https://orange-mud-f9b8.jjwwcc3115.workers.dev/signup', {
+                method: 'POST',
+                body: JSON.stringify(user),
+                headers: {
+                    'content-type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                    'mode': 'no-cors'
+                }
+            }).then(response => response.json())
+                .then(result => {
+                    if (result.identities.length > 0 && result.identities[0].hasOwnProperty('user_id')) {
+                        let signupEmail = result.identities[0].identity_data.email;
+                        gptMsg.innerHTML = '<div style="padding: 15px;">You have successfully signed up. Please verify your email address ' + signupEmail + '.</div>';
+                        gptMsg.style.display = 'block';
+                        showLogin();
+                    } else {
+                        error.style.display = 'block';
+                        error.innerHTML = '<div style="padding: 15px;"> Email already exists or invalid email address. </div>';
+                    }
+
+                });
+        });
 
         // Define messages array
         let messages = [{ role: 'system', content: 'You are a helpful assistant.' }];
 
-        // Bind form submit event
-        form.addEventListener('submit', function (e) {
+        promptForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            // Get form data
-            const formData = new FormData(form);
-            const model = formData.get('model');
+            const formData = new FormData(promptForm);
             const prompt = formData.get('text').trim();
+            var deltaMsg = '';
+
+            // Check if token and prompt are not empty
+            if (!token || !prompt) {
+                error.innerHTML = 'Token and text cannot be empty.';
+                return;
+            }
 
             // Change HTML tags to text
             const promptText = prompt.replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -303,64 +553,104 @@
             const userMsg = { role: 'user', content: promptText };
             messages.push(userMsg);
 
+            // If token doesn't exist, store it in localstorage
+            if (!localStorage.getItem('token')) {
+                localStorage.setItem('token', token);
+            }
+            if (!localStorage.getItem('model')) {
+                localStorage.setItem('model', model);
+            }
+
             // Show generating message
             gptMsg.style.display = 'block';
             gptMsg.innerHTML = '<div style="padding: 15px;">Generating...</div>';
 
-            form.text.value = '';
+            promptForm.text.value = '';
 
             // Disable submit button
             document.querySelector('#promptSubmit').disabled = true;
 
+            // create div chat-message chat-message-user and append it to chat
+            const userMsgDiv = document.createElement('div');
+            userMsgDiv.classList.add('chat-message', 'chat-message-user');
+            userMsgDiv.innerHTML = `<button class="copy-btn">COPY</button><pre>${promptText}</pre><div class="chat-message-meta"><div>${dateString} ${timeStamp}</div><div>You</div></div>`;
+            chat.appendChild(userMsgDiv);
+
+            // create div chat-message chat-message-assistant and append it to chat
+            const assistantMsg = document.createElement('div');
+            assistantMsg.classList.add('chat-message', 'chat-message-assistant');
+            assistantMsg.innerHTML = `<button class="copy-btn">COPY</button><pre>Generating...</pre><div class="chat-message-meta"><div>${dateString} ${timeStamp}</div><div>Assistant</div></div>`;
+            chat.appendChild(assistantMsg);
+
             // Make request to OpenAI API
-            fetch('https://eoar45al41syrz4.m.pipedream.net/api', {
+            fetch('https://muddy-dew-afae.jjwwcc3115.workers.dev/v1/chat/completions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'uuid': '36a1aea0-4218-4a90-a2d9-7132e39243cc'
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    // model,
-                    messages
+                    model,
+                    messages,
+                    stream: true
                 })
             })
-                .then(response => response.json())
-                .then(response => {
-                    // Clear generating message
-                    gptMsg.innerHTML = '';
-                    error.innerHTML = '';
-                    // Enable submit button
-                    document.querySelector('#promptSubmit').disabled = false;
+                .then(response => response.body)
+                .then(body => {
+                    const reader = body.getReader();
 
-                    // Handle error response
-                    if (response.error) {
-                        error.innerHTML = response.error.message;
-                        return;
+                    function readChunk() {
+                        return reader.read().then(({ done, value }) => {
+                            if (done) {
+                                return;
+                            }
+
+                            const text = new TextDecoder("utf-8").decode(value);
+                            // 根据换行符分割数据块
+                            const textArray = text.split('\n');
+                            var fixedMsg;
+                            textArray.forEach((item) => {
+                                fixedMsg = item.replace(/^data: /, '');
+                                try {
+                                    textJson = JSON.parse(fixedMsg);
+                                    textJson.choices.forEach((choice) => {
+                                        if (!choice.delta.content) {
+                                            return;
+                                        }
+                                        deltaMsg += choice.delta.content;
+                                        const allPre = document.getElementsByTagName('pre');
+                                        const lastPre = allPre[allPre.length - 1];
+                                        lastPre.innerText = deltaMsg;
+                                        // handle error response
+                                        if (textJson.error) {
+                                            error.innerHTML = textJson.error.message;
+                                            // show input fields and label elements
+                                            tokenInput.style.display = 'block';
+                                            document.querySelector('label[for="token"]').style.display = 'block';
+                                            modelInput.style.display = 'block';
+                                            document.querySelector('label[for="model"]').style.display = 'block';
+                                            // clear local storage
+                                            localStorage.clear();
+                                        }
+                                    });
+                                    if (textJson.choices[0].finish_reason == 'stop') {
+                                        messages.push({ role: 'assistant', content: deltaMsg });
+                                        // clear generating message
+                                        gptMsg.innerHTML = '';
+                                        error.innerHTML = '';
+                                        // enable submit button
+                                        document.querySelector('#promptSubmit').disabled = false;
+                                        // scroll to bottom
+                                        chat.scrollTop = chat.scrollHeight;
+                                    }
+                                } catch (e) {
+                                    return;
+                                }
+                            });
+                            return readChunk();
+                        });
                     }
-
-                    // Add assistant message to messages array
-                    const assistantMsg = { role: 'assistant', content: response.choices[0].message.content };
-                    messages.push(assistantMsg);
-
-                    // Render messages to chat
-                    let chatContent = '';
-                    messages.forEach(message => {
-                        if (message.role === 'system') {
-                            return;
-                        }
-                        const roleClass = message.role === 'user' ? 'chat-message-user' : 'chat-message-assistant';
-                        chatContent += `
-                            <div class="chat-message ${roleClass}">
-                            <button class="copy-btn">COPY</button>
-                            <pre>${message.content}</pre>
-                            <div class="chat-message-meta">
-                                <div>${new Date().toLocaleString()}</div>
-                                <div>${message.role === 'user' ? 'You' : 'Assistant'}</div>
-                            </div>
-                            </div>
-                        `;
-                    });
-                    chat.innerHTML = chatContent;
+                    readChunk();
 
                     const copyBtns = document.querySelectorAll('.copy-btn');
                     copyBtns.forEach(btn => {
@@ -400,10 +690,42 @@
         document.getElementById('clear').addEventListener('click', function () {
             messages = [{ role: 'system', content: 'You are a helpful assistant.' }];
             chat.innerHTML = '';
-            saveButton.style.display = 'none';
             document.querySelector('#promptSubmit').disabled = false;
         });
 
+        // ESC key to clear chat
+        document.onkeydown = function (e) {
+            if (e.keyCode === 27) {
+                document.getElementById('clear').click();
+            }
+        };
+
+        // ctrl+space to btnSpeak
+        document.onkeydown = function (e) {
+            if (e.ctrlKey && e.keyCode === 32) {
+                document.getElementById('btnSpeak').click();
+            }
+        };
+
+        // showSignup()
+        function showSignup() {
+            document.getElementById('signupForm').style.display = 'flex';
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+        }
+
+        // showLogin()
+        function showLogin() {
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'flex';
+            document.getElementById('error').style.display = 'none';
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.reload();
+            document.getElementById('menu').style.display = 'none';
+        }
     </script>
 </body>
 

@@ -1,0 +1,137 @@
+<html>
+
+<head>
+    <title>Curl Command Request</title>
+    <script src='https://www.scrapingbee.com/scripts/curl-converter-prod.js'></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            background-color: black;
+            color: #00FF00;
+            /* green */
+        }
+
+        .terminal {
+            font-family: "Lucida Console", Monaco, monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, .5);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .terminal h1 {
+            margin: 0;
+            padding: 10px;
+        }
+
+        .terminal form {
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            height: 30%;
+        }
+
+        .terminal textarea {
+            width: 100%;
+            height: 100%;
+            outline: none;
+            border: none;
+            background-color: transparent;
+            color: #00FF00;
+            /* green */
+            resize: none;
+        }
+
+        .terminal button {
+            background-color: black;
+            color: #00FF00;
+            /* green */
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .terminal #response {
+            background-color: black;
+            color: white;
+            padding: 10px;
+            overflow: auto;
+            flex-grow: 1;
+        }
+
+        .terminal #response p {
+            margin: 0;
+            padding: 0;
+        }
+
+        .terminal #response .request {
+            color: #00FF00;
+            /* green */
+        }
+
+        .terminal input[type="text"] {
+            background-color: black;
+            color: #00FF00;
+            /* green */
+            border: none;
+            padding: 10px;
+            outline: none;
+        }
+
+        /* submit */
+        .terminal button[type="submit"] {
+            background-color: black;
+            color: #00FF00;
+            border: none;
+            padding: 10px;
+            text-align: left;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="terminal">
+        <h1>Curl Command Request</h1>
+        <form id="curl-form">
+            <label>Curl Command:</label>
+            <textarea name="command"></textarea>
+            <button type="submit">Send Request</button>
+        </form>
+
+        <div id="response"></div>
+    </div>
+
+    <script>
+        const curlForm = document.getElementById('curl-form');
+        const response = document.getElementById('response');
+
+        curlForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const curlCommand = curlForm.command.value;
+
+            curlconverter.toJsonString(curlCommand, (err, output) => {
+                if (err) {
+                    console.error(err);
+                } else {
+                    console.log(output);
+                }
+            });
+
+        });
+
+
+    </script>
+</body>
+
+</html>

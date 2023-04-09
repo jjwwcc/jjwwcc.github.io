@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="icon.png" type="image/x-icon">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>PeachCanned</title>
+    <style>
+        /* Styles for header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px;
+            background-color: #333;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+        }
+
+        /* Styles for the content below the header */
+        #content {
+            padding: 0 20px;
+            margin-top: 100px;
+            /* Adjust the margin-top value as needed */
+        }
+
+        /* Styles for logo container */
+        #logo {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Styles for logo image */
+        #logo img {
+            margin-right: 10px;
+        }
+
+        /* Styles for logo title */
+        #logo h1 {
+            font-size: 21px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        /* Styles for menu */
+        .menu {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Styles for menu links */
+        .menu a {
+            font-size: 13px;
+            font-weight: bold;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        /* Styles for menu links hover state */
+        .menu a:hover {
+            background-color: #5d7d20;
+            color: #fff;
+        }
+
+        /* Styles for chat container */
+        #chat {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+            background-color: #f2f2f2;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Styles for chat message */
+        .chat-message {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            max-width: 95%;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        /* Styles for user chat message */
+        .chat-message-user {
+            background-color: #675636;
+            color: #fff;
+            align-self: flex-end;
+        }
+
+        /* Styles for assistant chat message */
+        .chat-message-assistant {
+            background-color: #fff;
+            color: #000;
+            align-self: flex-start;
+        }
+
+        /* Styles for chat message metadata */
+        .chat-message-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* Styles for chat message timestamp */
+        .chat-message-meta>div:first-child {
+            margin-right: 5px;
+        }
+
+        /* Styles for chat message author */
+        .chat-message-meta>div:last-child {
+            font-weight: bold;
+        }
+
+        /* Styles for chat input form */
+        form {
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            padding: 0 20px;
+        }
+
+        /* Styles for chat input form labels */
+        form>label {
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Styles for chat input form input fields */
+        form>input[type="text"],
+        form>textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            border-radius: 5px;
+            font-size: 16px;
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Styles for chat input form submit button */
+        form>input[type="submit"] {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #675636;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        /* Styles for save button */
+        #save {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px;
+            border-radius: 50%;
+            font-size: 32px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #675636;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        /* Styles for save button hover state */
+        #save:hover {
+            transform: scale(1.1);
+        }
+
+        pre {
+            white-space: pre-wrap;
+        }
+
+        #gptMsg {
+            text-align: center;
+            position: fixed;
+            top: 55px;
+            left: 0;
+            width: 100%;
+            background: #1e542a;
+            color: #fff;
+            display: none;
+            font-size: 1.0em;
+        }
+
+        #error {
+            text-align: center;
+            position: fixed;
+            top: 55px;
+            left: 0;
+            width: 100%;
+            background: #ff0000;
+            color: #fff;
+            display: none;
+            font-size: 1.0em;
+        }
+
+        #footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 8px;
+        }
+
+        .copy-btn {
+            margin-left: auto;
+            font-size: 12px;
+            padding: 3px 5px;
+            border: none;
+            background-color: #f5f5f5;
+            cursor: pointer;
+            opacity: 0.4;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div id="logo">
+            <img src="icon.png" alt="logo" width="35">
+            <h1>PeachCanned</h1>
+            <a href="#" id="save" hidden>🍏</a>
+        </div>
+        <div class="menu">
+            <a href="#" id="clear"> RESET </a>
+            <a href="https://jjwwcc.github.io/chat" target="_blank"> CONTACT </a>
+        </div>
+    </header>
+
+    <div id="content">
+        <div id="gptMsg"></div>
+        <div id="error"></div>
+        <div id="chat"></div>
+    </div>
+
+    <form>
+        <label for="model" hidden>Model:</label>
+        <input type="text" name="model" value="gpt-3.5-turbo" hidden>
+        <label for="text">Prompt:</label>
+        <textarea name="text" id="" name="text" cols="30" rows="10"></textarea>
+        <input type="submit" value="SUBMIT (Ctrl+Enter)" id="promptSubmit">
+    </form>
+    <div id="footer">
+        <p>© 2023 Peach Canned. All rights reserved.</p>
+    </div>
+
+    <script>
+        // Cache frequently accessed elements
+        const chat = document.getElementById('chat');
+        const form = document.querySelector('form');
+        const saveButton = document.getElementById('save');
+        const modelInput = document.querySelector('input[name="model"]');
+        const error = document.getElementById('error');
+        const gptMsg = document.getElementById('gptMsg');
+
+        // current date
+        const today = new Date();
+        const dateString = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+        const timeStamp = `${today.getHours()}-${today.getMinutes()}-${today.getSeconds()}`;
+
+        // Define messages array
+        let messages = [{ role: 'system', content: 'You are a helpful assistant.' }];
+
+        // Bind form submit event
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            // Get form data
+            const formData = new FormData(form);
+            const model = formData.get('model');
+            const prompt = formData.get('text').trim();
+
+            // Change HTML tags to text
+            const promptText = prompt.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+            // Add user message to messages array
+            const userMsg = { role: 'user', content: promptText };
+            messages.push(userMsg);
+
+            // Show generating message
+            gptMsg.style.display = 'block';
+            gptMsg.innerHTML = '<div style="padding: 15px;">Generating...</div>';
+
+            form.text.value = '';
+
+            // Disable submit button
+            document.querySelector('#promptSubmit').disabled = true;
+
+            // Make request to OpenAI API
+            fetch('https://eoar45al41syrz4.m.pipedream.net/api', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'uuid': '36a1aea0-4218-4a90-a2d9-7132e39243cc'
+                },
+                body: JSON.stringify({
+                    // model,
+                    messages
+                })
+            })
+                .then(response => response.json())
+                .then(response => {
+                    // Clear generating message
+                    gptMsg.innerHTML = '';
+                    error.innerHTML = '';
+                    // Enable submit button
+                    document.querySelector('#promptSubmit').disabled = false;
+
+                    // Handle error response
+                    if (response.error) {
+                        error.innerHTML = response.error.message;
+                        return;
+                    }
+
+                    // Add assistant message to messages array
+                    const assistantMsg = { role: 'assistant', content: response.choices[0].message.content };
+                    messages.push(assistantMsg);
+
+                    // Render messages to chat
+                    let chatContent = '';
+                    messages.forEach(message => {
+                        if (message.role === 'system') {
+                            return;
+                        }
+                        const roleClass = message.role === 'user' ? 'chat-message-user' : 'chat-message-assistant';
+                        chatContent += `
+                            <div class="chat-message ${roleClass}">
+                            <button class="copy-btn">COPY</button>
+                            <pre>${message.content}</pre>
+                            <div class="chat-message-meta">
+                                <div>${new Date().toLocaleString()}</div>
+                                <div>${message.role === 'user' ? 'You' : 'Assistant'}</div>
+                            </div>
+                            </div>
+                        `;
+                    });
+                    chat.innerHTML = chatContent;
+
+                    const copyBtns = document.querySelectorAll('.copy-btn');
+                    copyBtns.forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const pre = btn.nextElementSibling;
+                            const text = pre.innerText;
+                            const textarea = document.createElement('textarea');
+                            textarea.value = text;
+                            document.body.appendChild(textarea);
+                            textarea.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(textarea);
+                            btn.innerText = 'COPIED';
+                        });
+                    });
+
+                    // Clear prompt textarea
+                    form.text.value = '';
+                    document.documentElement.scrollTop = document.documentElement.scrollHeight;
+                })
+                .catch(error => {
+                    gptMsg.style.display = 'none';
+                    error.innerHTML = error.message;
+                    // Enable submit button
+                    document.querySelector('#promptSubmit').disabled = false;
+                });
+        });
+
+        // Enable form submission with Ctrl+Enter
+        document.onkeypress = function (e) {
+            if (e.ctrlKey && (e.keyCode === 13 || e.keyCode === 10)) {
+                document.getElementById('promptSubmit').click();
+            }
+        };
+
+        // Bind clear button click event
+        document.getElementById('clear').addEventListener('click', function () {
+            messages = [{ role: 'system', content: 'You are a helpful assistant.' }];
+            chat.innerHTML = '';
+            saveButton.style.display = 'none';
+            document.querySelector('#promptSubmit').disabled = false;
+        });
+
+    </script>
+</body>
+
+</html>
