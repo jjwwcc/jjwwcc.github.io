@@ -413,7 +413,14 @@
                     stream: true
                 })
             })
-                .then(response => response.body)
+                .then(if (!response.ok) {
+                        tokenInput.style.display = 'block';
+                        document.querySelector('label[for="token"]').style.display = 'block';
+                        modelInput.style.display = 'block';
+                        document.querySelector('label[for="model"]').style.display = 'block';
+                        localStorage.clear();
+                    }
+                    return response.body;)
                 .then(body => {
                     const reader = body.getReader();
 
