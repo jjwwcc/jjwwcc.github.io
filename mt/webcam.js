@@ -1,6 +1,7 @@
-const OPENAI_API_KEY = 'sk-';
 var base64Image = '';
 var prompt = {};
+// get token from local storage
+const token = localStorage.getItem('token');
 
 let isCapturing = false;
 // Initialize the webcam and set event listeners
@@ -28,6 +29,10 @@ function captureImage() {
     document.getElementById('image').style.display = 'block';
     document.getElementById('message-container').style.display = 'flex';
     document.getElementById('chatbox').style.display = 'none';
+    // stop camera
+    video.srcObject.getTracks().forEach(track => track.stop());
+    // clear canvas
+    context.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 function imageAsk() {
@@ -69,7 +74,7 @@ function processImage() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${OPENAI_API_KEY}`
+            'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(prompt)
     })
@@ -157,6 +162,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('capture').addEventListener('click', captureImage);
     document.getElementById('switch-camera').addEventListener('click', switchCamera());
     document.getElementById('imageAsk').addEventListener('click', imageAsk);
+    // start camera
+    document.getElementById('start-camera').addEventListener('click', initializeWebcam);
     // contrl + enter
     document.getElementById('msg').addEventListener('keydown', function (e) {
         if (e.ctrlKey && e.keyCode == 13) {
