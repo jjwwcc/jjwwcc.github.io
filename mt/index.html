@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Mantis</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="content-container">
+        <div id="webcam-container">
+            <video id="webcam" autoplay playsinline width="640" height="480"></video>
+            <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
+        </div>
+        <div id="button-container">
+            <button id="switch-camera">Switch Camera</button>
+            <button id="capture">Capture</button>
+        </div>
+            
+        <div id="message-container">
+            <div id="captureImg"><img id="image" src="" alt="Your image" style="display: none;"></div>
+            <div id="message">
+                <!-- message textarea -->
+                <textarea id="msg" placeholder="Enter your message here"></textarea>
+                <button id="imageAsk">Ask</button>
+            </div>
+        </div>
+        <div id="chatbox">
+            <!-- Loader will go here, hidden initially -->
+            <div class="loader" style="display: none;">Generating...</div>
+            <div id="chatbox-content"></div>
+        </div>     
+    </div>
+
+    <script src="webcam.js"></script>
+</body>
+</html>
