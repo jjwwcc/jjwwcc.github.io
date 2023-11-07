@@ -37,7 +37,7 @@ body, html {
 }
 
 /* Button styling */
-#capture, #switch-camera {
+#capture, #switch-camera, #start-camera {
     padding: 10px 15px;
     background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent for visibility */
     color: white;
@@ -125,7 +125,35 @@ body, html {
     z-index: 3; /* Above webcam feed but below buttons and message container */
 }
 
-/* Responsive adjustments */
+/* Media query for smaller screens */
 @media (max-width: 768px) {
-    /* Adjustments for smaller screens can be made here */
+    /* Adjust the message container for smaller screens */
+    #message-container {
+        flex-wrap: wrap; /* Allow items to wrap to the next line */
+        padding: 5px;
+    }
+
+    /* Adjust the image container for smaller screens */
+    #captureImg {
+        flex-basis: 100%; /* Let the image take full width */
+        justify-content: center; /* Center the image horizontally */
+        padding: 5px 0; /* Add padding above and below the image */
+    }
+
+    /* Adjust the message section for smaller screens */
+    #message {
+        width: 100%; /* Let the message area take full width */
+        padding: 5px 0; /* Add padding above and below the message area */
+    }
+
+    /* Adjust the message textarea for smaller screens */
+    #message textarea {
+        margin-bottom: 5px; /* Ensure space between textarea and button */
+    }
+
+    /* Ensure the button is full width for smaller screens */
+    #message button {
+        width: 100%;
+    }
 }
+
