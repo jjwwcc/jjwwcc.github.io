@@ -413,14 +413,15 @@
                     stream: true
                 })
             })
-                .then(if (response.status === 401) {
+                .then(response => { 
+                    if (response.status === 401) {
                         tokenInput.style.display = 'block';
                         document.querySelector('label[for="token"]').style.display = 'block';
                         modelInput.style.display = 'block';
                         document.querySelector('label[for="model"]').style.display = 'block';
                         localStorage.clear();
                     }
-                    return response.body;)
+                    return response.body;})
                 .then(body => {
                     const reader = body.getReader();
 
