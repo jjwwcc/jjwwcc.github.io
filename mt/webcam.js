@@ -1,4 +1,4 @@
-const OPENAI_API_KEY = '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';
+const OPENAI_API_KEY = 'sk-';
 var base64Image = '';
 var prompt = {};
 
