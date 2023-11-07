@@ -1,0 +1,131 @@
+/* Base styles */
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f3f3f3;
+    overflow: hidden; /* Hide scrollbars if the content is bigger than the screen */
+}
+
+/* Fullscreen webcam container */
+#webcam-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1; /* Lower z-index for webcam feed */
+}
+
+/* Webcam and canvas styling for full window */
+#webcam, #canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 2; /* Ensure webcam feed is below buttons and chat */
+}
+
+/* Button container for top-right positioning */
+#button-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 1000; /* High z-index to ensure buttons are clickable and visible */
+}
+
+/* Button styling */
+#capture, #switch-camera {
+    padding: 10px 15px;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent for visibility */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Message container at the bottom of the window */
+#message-container {
+    display: none; /* This will hide the element */
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+    border-radius: 8px;
+    padding: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    z-index: 1000; /* High z-index to ensure message box is above other content */
+}
+
+
+/* Image container within the message container, make it smaller */
+#captureImg {
+    flex: 0 0 200px; /* Adjust the size as needed, here it's set to 50px width */
+    padding-right: 10px; /* Add some space between the image and the message input */
+    display: flex; /* Use flex to enable alignment */
+    align-items: center; /* Center the image vertically */
+}
+
+/* Adjust the image size if needed */
+#captureImg img {
+    max-width: 100%; /* Make sure the image is not larger than the container */
+    max-height: 100%; /* Make sure the image is not taller than the container */
+}
+
+/* Message input and send button container */
+#message {
+    flex: 1; /* Grow to fill the remaining space */
+    display: flex; /* Use flexbox for internal layout */
+    flex-direction: column; /* Stack the children vertically */
+    align-items: stretch; /* Stretch the children to fill the width */
+}
+
+/* Message text area styling */
+#message textarea {
+    flex: 1; /* Allow the textarea to grow and fill the space vertically */
+    margin-bottom: 5px; /* Add some space between the textarea and the button */
+    padding: 10px; /* Add some padding inside the textarea for aesthetics */
+    border: 1px solid #ccc; /* A light border around the textarea */
+    border-radius: 4px; /* Slightly rounded corners for the textarea */
+    resize: vertical; /* Allow the user to resize the textarea vertically */
+}
+
+/* Send button styling */
+#message button {
+    padding: 10px 15px; /* Padding inside the button */
+    border: none; /* Remove the default border */
+    background-color: #007bff; /* A nice blue background color */
+    color: white; /* White text color */
+    border-radius: 4px; /* Slightly rounded corners for the button */
+    cursor: pointer; /* Change the cursor to indicate the button is clickable */
+}
+
+/* Add a hover effect for the button */
+#message button:hover {
+    background-color: #0056b3; /* A darker blue on hover */
+}
+
+/* Chatbox overlaying the webcam feed */
+#chatbox {
+    display: none;
+    position: absolute;
+    bottom: 90px; /* Positioned above the message container */
+    left: 0;
+    width: 100%;
+    max-height: 200px; /* Adjustable based on your preference */
+    overflow-y: auto;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent for visibility */
+    color: white;
+    padding: 10px;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    z-index: 3; /* Above webcam feed but below buttons and message container */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    /* Adjustments for smaller screens can be made here */
+}
