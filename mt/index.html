@@ -1,24 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta charset="UTF-8">
     <title>Mantis</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
 </head>
+
 <body>
     <div id="content-container">
         <div id="webcam-container">
-            <video id="webcam" autoplay playsinline width="1280" height="960"></video>
+            <div id="drop_area"></div>
+            <video id="webcam" autoplay playsinline width="1280" height="960" hidden></video>
             <canvas id="canvas" width="1280" height="960" style="display: none;"></canvas>
         </div>
         <div id="button-container">
+            <input id="file" type="file" id="upload" accept="image/*" hidden>
+            <button id="uploadButton">Upload</button>
             <button id="start-camera">Start Camera</button>
             <button id="switch-camera">Switch Camera</button>
             <button id="capture">Capture</button>
         </div>
-            
+
         <div id="message-container">
             <div id="captureImg"><img id="image" src="" alt="Your image" style="display: none;"></div>
             <div id="message">
@@ -31,9 +35,13 @@
             <!-- Loader will go here, hidden initially -->
             <div class="loader" style="display: none;">Generating...</div>
             <div id="chatbox-content"></div>
-        </div>     
+            <textarea type="text" id="userInputText" placeholder="Enter your message here"></textarea>
+            <button id="userInputButton">Ask</button>
+        </div>
+
     </div>
 
     <script src="webcam.js"></script>
 </body>
+
 </html>
