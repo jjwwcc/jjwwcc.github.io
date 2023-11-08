@@ -3,7 +3,7 @@ body, html {
     height: 100%;
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f3f3f3;
+    background: #151515;
     overflow: hidden; /* Hide scrollbars if the content is bigger than the screen */
 }
 
@@ -16,7 +16,7 @@ body, html {
 }
 
 /* Webcam and canvas styling for full window */
-#webcam, #canvas {
+#webcam, #canvas, #drop_area {
     position: absolute;
     top: 0;
     left: 0;
@@ -37,7 +37,7 @@ body, html {
 }
 
 /* Button styling */
-#capture, #switch-camera, #start-camera {
+#capture, #switch-camera, #start-camera, #uploadButton {
     padding: 10px 15px;
     background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent for visibility */
     color: white;
@@ -116,15 +116,37 @@ body, html {
     position: absolute;
     bottom: 90px; /* Positioned above the message container */
     left: 0;
-    width: 80%;
-    max-height: 200px; /* Adjustable based on your preference */
+    width: 90%;
+    max-height: 650px;
     overflow-y: auto;
-    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent for visibility */
+    background-color: rgba(0, 0, 0, 0.6);
     color: white;
+    margin: 15px;
     padding: 10px;
     border-radius: 0 0 8px 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    z-index: 3; /* Above webcam feed but below buttons and message container */
+    z-index: 3;
+}
+
+#userInputText {
+    margin: 15px 0;
+    width: 70%;
+    border: 2px solid #ccc;
+    background-color: transparent;
+    color: white;
+    font-size: 16px;
+    resize: none;
+}
+
+#userInputButton {
+    margin: 15px;
+    position: absolute;
+    padding: 20px 35px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 /* Media query for smaller screens */
