@@ -7,7 +7,7 @@ let isCapturing = false;
 // Initialize the webcam and set event listeners
 function initializeWebcam() {
     const video = document.getElementById('webcam');
-    navigator.mediaDevices.getUserMedia({ video: true })
+    navigator.mediaDevices.getUserMedia({ video:  { facingMode: "environment" } })
         .then(stream => {
             video.srcObject = stream;
         })
