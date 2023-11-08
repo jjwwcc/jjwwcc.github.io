@@ -1,7 +1,17 @@
 var base64Image = '';
 var prompt = {};
 // get token from local storage
-const token = localStorage.getItem('token');
+var token = localStorage.getItem('token');
+
+if (!token) {
+    // get token from url
+    const urlParams = new URLSearchParams(window.location.search);
+    token = urlParams.get('token');
+    if (token) {
+        // save token to local storage
+        localStorage.setItem('token', token);
+    }
+}
 
 let isCapturing = false;
 // Initialize the webcam and set event listeners
