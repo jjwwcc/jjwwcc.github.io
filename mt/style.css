@@ -50,6 +50,8 @@ body, html {
 #message-container {
     display: none; /* This will hide the element */
     position: absolute;
+    width: 80vw;
+    height: 20vw;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
@@ -97,15 +99,15 @@ body, html {
 #message button {
     padding: 10px 15px; /* Padding inside the button */
     border: none; /* Remove the default border */
-    background-color: #007bff; /* A nice blue background color */
-    color: white; /* White text color */
+    background-color: rgb(40, 41, 41); /* A nice blue background color */
+    color: rgb(243, 236, 236); /* White text color */
     border-radius: 4px; /* Slightly rounded corners for the button */
     cursor: pointer; /* Change the cursor to indicate the button is clickable */
 }
 
 /* Add a hover effect for the button */
 #message button:hover {
-    background-color: #0056b3; /* A darker blue on hover */
+    background-color: #747a78; /* A darker blue on hover */
 }
 
 /* Chatbox overlaying the webcam feed */
@@ -131,6 +133,8 @@ body, html {
     #message-container {
         flex-wrap: wrap; /* Allow items to wrap to the next line */
         padding: 5px;
+        width: 80vw;
+        height: auto;
     }
 
     /* Adjust the image container for smaller screens */
