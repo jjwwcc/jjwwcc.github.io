@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大学申请倒计时和学习进度条</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>大学申请倒计时</h1>
+        <p id="countdown"></p>
+
+        <h2>学习进度条</h2>
+        <div class="progress-container">
+            <div class="progress-item">
+                <label for="activity1">社会影响力的活动:</label>
+                <input type="range" id="activity1" min="0" max="100" value="0">
+                <span id="value1">0%</span>
+            </div>
+
+            <div class="progress-item">
+                <label for="activity2">论文发表:</label>
+                <input type="range" id="activity2" min="0" max="100" value="0">
+                <span id="value2">0%</span>
+            </div>
+
+            <div class="progress-item">
+                <label for="activity3">含金量竞赛:</label>
+                <input type="range" id="activity3" min="0" max="100" value="0">
+                <span id="value3">0%</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
