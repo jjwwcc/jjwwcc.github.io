@@ -31,6 +31,14 @@
 </head>
 <body>
     <div id="tradingview_widget"></div>
+    <button id="login" style="position: fixed; top: 10px; right: 10px; z-index: 1000;">登录 TradingView</button>
+    <script>
+        document.getElementById('login').addEventListener('click', function() {
+            // 打开 TradingView 登录窗口
+            window.open('https://www.tradingview.com/accounts/signin/', 'tvlogin', 
+                'width=600,height=600,left=200,top=200');
+        });
+    </script>
     <script>
         new TradingView.widget({
             "width": "100%",
@@ -44,7 +52,17 @@
             "toolbar_bg": "#f1f3f6",
             "enable_publishing": false,
             "hide_side_toolbar": true,
-            "allow_symbol_change": false,
+            "allow_symbol_change": true,
+            "studies": [],
+            "client_id": "tradingview.com",
+            "session": "24x7",
+            "library_path": "https://s3.tradingview.com/tv.js",
+            "auto_save_delay": 5,
+            "debug": false,
+            "fullscreen": true,
+            "autosize": true,
+            "datafeed_provider": "Real-time",
+            "supported_resolutions": ["1", "5", "15", "30", "60", "D", "W", "M"],
             "container_id": "tradingview_widget",
             "save_image": false,
             "hide_volume": false,
