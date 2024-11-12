@@ -31,14 +31,6 @@
 </head>
 <body>
     <div id="tradingview_widget"></div>
-    <button id="login" style="position: fixed; top: 10px; right: 10px; z-index: 1000;">登录 TradingView</button>
-    <script>
-        document.getElementById('login').addEventListener('click', function() {
-            // 打开 TradingView 登录窗口
-            window.open('https://www.tradingview.com/accounts/signin/', 'tvlogin', 
-                'width=600,height=600,left=200,top=200');
-        });
-    </script>
     <script>
         new TradingView.widget({
             "width": "100%",
