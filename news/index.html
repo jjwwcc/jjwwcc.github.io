@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Feed</title>
+    <style>
+        .news-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .news-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+        .news-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .news-content {
+            font-size: 14px;
+            color: #666;
+        }
+        .audio-player {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="news-container" id="newsContainer"></div>
+
+    <script>
+        let lastNewsId = null;
+        const audioPlayer = new Audio();
+        
+        async function fetchNews() {
+            try {
+                const response = await fetch('https://news.futunn.com/news-site-api/main/get-flash-list?pageSize=30&_t=' + Date.now() + '&stock=us');
+                const data = await response.json();
+                
+                if (data.code === 0 && data.data.data.news.length > 0) {
+                    const latestNews = data.data.data.news[0];
+                    
+                    // Check if this is new content
+                    if (lastNewsId !== latestNews.id) {
+                        lastNewsId = latestNews.id;
+                        
+                        // Update DOM
+                        updateNewsDisplay(data.data.data.news);
+                        
+                        // Play audio if available
+                        if (latestNews.audioInfos && latestNews.audioInfos.length > 0) {
+                            // Find English audio
+                            const englishAudio = latestNews.audioInfos.find(audio => audio.language === 'English');
+                            if (englishAudio) {
+                                audioPlayer.src = englishAudio.audioUrl;
+                                audioPlayer.play();
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching news:', error);
+            }
+        }
+        
+        function updateNewsDisplay(newsArray) {
+            const container = document.getElementById('newsContainer');
+            container.innerHTML = ''; // Clear existing content
+            
+            newsArray.forEach(news => {
+                const newsElement = document.createElement('div');
+                newsElement.className = 'news-item';
+                
+                newsElement.innerHTML = `
+                    <div class="news-title">${news.title || 'Untitled'}</div>
+                    <div class="news-content">${news.content}</div>
+                `;
+                
+                container.appendChild(newsElement);
+            });
+        }
+        
+        // Initial fetch
+        fetchNews();
+        
+        // Set up periodic refresh
+        setInterval(fetchNews, 15000);
+    </script>
+</body>
+</html>
