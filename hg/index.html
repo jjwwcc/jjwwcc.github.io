@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 搜题闪卡</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.05); /* 更低的透明度 */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1); /* 更淡的边框 */
+            border-radius: 0.75rem; /* rounded-lg */
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05); /* shadow-xl */
+            padding: 2rem; /* p-8 */
+            max-width: 36rem; /* max-w-2xl */
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 2rem; /* mb-8 */
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* 添加过渡效果 */
+        }
+
+        .card:hover {
+            transform: translateY(-4px); /* 稍微向上移动 */
+            box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.15), 0 10px 15px -7px rgba(0, 0, 0, 0.1); /* 阴影稍微变大 */
+        }
+
+        .card-title {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 600; /* font-semibold */
+            color: white;
+            margin-bottom: 1rem; /* mb-4 */
+        }
+
+        .card-description {
+            color: rgb(209, 213, 219); /* text-gray-300 */
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+
+        .option {
+            color: rgb(229, 231, 235); /* text-gray-200 */
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+
+        .option-label {
+            font-weight: 500; /* font-medium */
+            margin-right: 0.25rem; /* mr-1 */
+        }
+
+        .error-message {
+            color: rgb(248, 113, 113); /* text-red-500 */
+            background-color: rgba(254, 226, 226, 1); /* bg-red-100 */
+            padding: 1rem; /* p-4 */
+            border-radius: 0.375rem; /* rounded-md */
+            margin-bottom: 1rem; /* mb-4 */
+            border: 1px solid rgb(252, 165, 165); /* border-red-300 */
+            display: flex; /* Use flexbox for alignment */
+            align-items: center; /* Vertically center items */
+        }
+
+        .error-icon {
+            margin-right: 0.75rem; /* mr-3 */
+            width: 1rem; /* w-5 */
+            height: 1rem; /* h-5 */
+            stroke-width: 2;
+            fill: none;
+            stroke: currentColor;
+        }
+
+        .get-question-button {
+            background-image: linear-gradient(to right, rgb(167, 139, 250), rgb(217, 70, 239)); /* from-purple-500 to-pink-500 */
+            color: white;
+            font-weight: 600; /* font-semibold */
+            padding: 0.75rem 1.5rem; /* py-2 px-6 */
+            border-radius: 1rem; /* rounded-full */
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 10px -2px rgba(0, 0, 0, 0.15), 0 3px 7px -3px rgba(0, 0, 0, 0.07);
+            cursor: pointer;
+            border: none;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 2rem; /* mb-8 */
+            width: fit-content;
+        }
+
+        .get-question-button:hover {
+            background-image: linear-gradient(to right, rgb(145, 107, 230), rgb(192, 38, 211)); /* hover:from-purple-600 hover:to-pink-600 */
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px -4px rgba(0, 0, 0, 0.18), 0 4px 9px -4px rgba(0, 0, 0, 0.12);
+        }
+
+        .get-question-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            background-image: linear-gradient(to right, rgb(167, 139, 250), rgb(217, 70, 239)); /* 保持渐变 */
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-black p-4 flex items-center justify-center min-h-screen">
+    <div class="max-w-md w-full">
+        <h1 class="text-3xl font-bold text-white mb-6 text-center">
+            AI 搜题闪卡
+        </h1>
+
+        <div class="mb-4 text-center">
+            <button id="save-token-button" class="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 hover:text-blue-300 border border-blue-500/30 rounded-md px-4 py-2">
+                存储 API Token
+            </button>
+        </div>
+
+        <button id="get-question-button" class="get-question-button">
+            加载中...
+        </button>
+
+        <div id="error-container" class="error-message" style="display: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" class="error-icon" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 011.414 0L10 8.586l.879-.88a1 1 0 111.414 1.414L11.414 10l.88.879a1 1 0 01-1.414 1.414L10 11.414l-.879.88a1 1 0 01-1.414-1.414L8.586 10l-.88-.879a1 1 0 010-1.414z"/></svg>
+            <span id="error-text"></span>
+        </div>
+
+        <div id="question-card" class="card" style="display: none;">
+            <h2 class="card-title">题目</h2>
+            <p class="card-description" id="question-text"></p>
+            <div class="option" id="option-a"><span class="option-label">A:</span> </div>
+            <div class="option" id="option-b"><span class="option-label">B:</span> </div>
+            <div class="option" id="option-c"><span class="option-label">C:</span> </div>
+            <div class="option" id="option-d"><span class="option-label">D:</span> </div>
+            <div class="option" id="option-e" style="display: none;"><span class="option-label">E:</span> </div>
+        </div>
+    </div>
+
+    <script>
+        const questionCard = document.getElementById('question-card');
+        const questionText = document.getElementById('question-text');
+        const optionA = document.getElementById('option-a');
+        const optionB = document.getElementById('option-b');
+        const optionC = document.getElementById('option-c');
+        const optionD = document.getElementById('option-d');
+        const optionE = document.getElementById('option-e');
+        const errorContainer = document.getElementById('error-container');
+        const errorText = document.getElementById('error-text');
+        const getQuestionButton = document.getElementById('get-question-button');
+        const saveTokenButton = document.getElementById('save-token-button');
+
+        let apiToken = localStorage.getItem('apiToken');
+
+        if (apiToken) {
+            getQuestionButton.textContent = '获取题目';
+        }
+
+        saveTokenButton.addEventListener('click', () => {
+            const token = prompt('请输入您的 API Token:');
+            if (token) {
+                apiToken = token;
+                localStorage.setItem('apiToken', token);
+                alert('API Token 已保存！');
+                if (!getQuestionButton.disabled) {
+                    getQuestionButton.textContent = '获取题目';
+                }
+            } else {
+                alert('未输入 API Token，请重试。');
+            }
+        });
+
+        getQuestionButton.addEventListener('click', () => {
+            if (!apiToken) {
+                setError('请先在本地存储 API Token。');
+                return;
+            }
+
+            getQuestionButton.disabled = true;
+            getQuestionButton.textContent = '加载中...';
+            errorContainer.style.display = 'none';
+            questionCard.style.display = 'none';
+
+            fetch('https://api.cloudflare.com/client/v4/accounts/521d053efb59f680091e0e1d22d5144d/autorag/rags/humangeo/ai-search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiToken}`
+                },
+                body: JSON.stringify({
+                    query: 'please give me random question and give me a b c d e option too'
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.result) {
+                    questionText.textContent = data.result.question;
+                    optionA.textContent = `A: ${data.result.a}`;
+                    optionB.textContent = `B: ${data.result.b}`;
+                    optionC.textContent = `C: ${data.result.c}`;
+                    optionD.textContent = `D: ${data.result.d}`;
+                    if (data.result.e) {
+                        optionE.textContent = `E: ${data.result.e}`;
+                        optionE.style.display = '';
+                    } else {
+                        optionE.style.display = 'none';
+                    }
+                    questionCard.style.display = 'block';
+                } else {
+                    setError('API 返回数据格式不正确。');
+                }
+            })
+            .catch(error => {
+                setError(error.message);
+            })
+            .finally(() => {
+                getQuestionButton.disabled = false;
+                getQuestionButton.textContent = '获取题目';
+            });
+        });
+
+        function setError(message) {
+            errorText.textContent = message;
+            errorContainer.style.display = 'flex';
+            questionCard.style.display = 'none';
+            getQuestionButton.textContent = '获取题目'; // 确保按钮文本在出错时更新
+            getQuestionButton.disabled = false; // 确保出错时按钮可用
+        }
+    </script>
+</body>
+</html>
