@@ -128,6 +128,21 @@
             margin: 20px 0;
             display: none;
         }
+        .mode-selector {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .mode-selector label {
+            margin-right: 15px;
+            font-size: 16px;
+        }
+        .shuffle-button {
+            margin-left: 10px;
+            background-color: #007bff;
+        }
+        .shuffle-button:hover {
+            background-color: #0069d9;
+        }
     </style>
 </head>
 <body>
@@ -135,6 +150,16 @@
     
     <div id="loadingMessage">Loading flashcards from human_geography_questions.md...</div>
     <div id="errorMessage"></div>
+    
+    <div class="mode-selector">
+        <label>
+            <input type="radio" name="mode" value="sequential" checked> Sequential Mode
+        </label>
+        <label>
+            <input type="radio" name="mode" value="random"> Random Mode
+        </label>
+        <button id="shuffleBtn" class="shuffle-button">Shuffle Cards</button>
+    </div>
     
     <div class="stats">
         <div>
@@ -171,6 +196,12 @@
     <script>
         // Flashcard data will be stored here
         const flashcardData = [];
+        
+        // To keep track of original order
+        let originalData = [];
+        
+        // Current sequence of cards (indices into flashcardData)
+        let cardSequence = [];
 
         // App state
         let currentCardIndex = 0;
@@ -178,12 +209,14 @@
         let answered = false;
         let correctCount = 0;
         let incorrectCount = 0;
+        let isRandomMode = false;
 
         // DOM elements
         const cardsContainer = document.getElementById('cards');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const checkBtn = document.getElementById('checkBtn');
+        const shuffleBtn = document.getElementById('shuffleBtn');
         const feedbackDiv = document.getElementById('feedback');
         const explanationDiv = document.getElementById('explanation');
         const currentCardSpan = document.getElementById('currentCard');
@@ -193,23 +226,45 @@
         const incorrectAnswersSpan = document.getElementById('incorrectAnswers');
         const loadingMessage = document.getElementById('loadingMessage');
         const errorMessage = document.getElementById('errorMessage');
+        const modeRadios = document.querySelectorAll('input[name="mode"]');
+
+        // Fisher-Yates shuffle algorithm
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Generate sequence array
+        function generateSequence(length, random = false) {
+            let sequence = Array.from({ length }, (_, i) => i);
+            return random ? shuffleArray(sequence) : sequence;
+        }
 
         // Initialize flashcards
         function initFlashcards() {
             cardsContainer.innerHTML = '';
             
-            flashcardData.forEach((data, index) => {
+            // Generate card sequence based on mode
+            cardSequence = generateSequence(flashcardData.length, isRandomMode);
+            
+            flashcardData.forEach((_, index) => {
                 const card = document.createElement('div');
                 card.className = `card ${index === 0 ? 'active' : ''}`;
                 
+                // Get card data based on sequence
+                const cardData = flashcardData[cardSequence[index]];
+                
                 const questionDiv = document.createElement('div');
                 questionDiv.className = 'question';
-                questionDiv.textContent = data.question;
+                questionDiv.textContent = cardData.question;
                 
                 const optionsList = document.createElement('ul');
                 optionsList.className = 'options';
                 
-                data.options.forEach((option, optionIndex) => {
+                cardData.options.forEach((option, optionIndex) => {
                     const optionItem = document.createElement('li');
                     optionItem.className = 'option';
                     optionItem.textContent = option;
@@ -237,13 +292,24 @@
             totalCardsSpan.textContent = flashcardData.length;
             totalCardsProgressSpan.textContent = flashcardData.length;
             updateCardCounter();
+            
+            // Reset stats
+            correctCount = 0;
+            incorrectCount = 0;
+            correctAnswersSpan.textContent = '0';
+            incorrectAnswersSpan.textContent = '0';
+            
+            // Reset current card
+            currentCardIndex = 0;
+            resetCardState();
         }
 
         // Check answer
         function checkAnswer() {
             if (answered || selectedOption === null) return;
             
-            const correctAnswer = flashcardData[currentCardIndex].correctAnswer;
+            const currentCardData = flashcardData[cardSequence[currentCardIndex]];
+            const correctAnswer = currentCardData.correctAnswer;
             const isCorrect = selectedOption === correctAnswer;
             
             // Mark options as correct/incorrect
@@ -265,7 +331,7 @@
             feedbackDiv.style.display = 'block';
             
             // Show explanation
-            explanationDiv.textContent = flashcardData[currentCardIndex].explanation;
+            explanationDiv.textContent = currentCardData.explanation;
             explanationDiv.style.display = 'block';
             
             // Update stats
@@ -323,6 +389,50 @@
         function updateCardCounter() {
             currentCardSpan.textContent = currentCardIndex + 1;
             prevBtn.disabled = currentCardIndex <= 0;
+        }
+
+        // Shuffle cards 
+        function shuffleCards() {
+            // Reset counters and states
+            currentCardIndex = 0;
+            selectedOption = null;
+            answered = false;
+            
+            // Generate new sequence
+            cardSequence = generateSequence(flashcardData.length, true);
+            
+            // Update card content
+            document.querySelectorAll('.card').forEach((card, index) => {
+                const cardData = flashcardData[cardSequence[index]];
+                
+                // Update question
+                card.querySelector('.question').textContent = cardData.question;
+                
+                // Update options
+                const options = card.querySelectorAll('.option');
+                cardData.options.forEach((option, optionIndex) => {
+                    options[optionIndex].textContent = option;
+                    options[optionIndex].className = 'option'; // Reset any selected/correct/incorrect classes
+                });
+            });
+            
+            // Show first card
+            document.querySelector('.card.active').classList.remove('active');
+            document.querySelectorAll('.card')[0].classList.add('active');
+            
+            // Reset UI
+            resetCardState();
+            updateCardCounter();
+            feedbackDiv.style.display = 'none';
+            explanationDiv.style.display = 'none';
+        }
+
+        // Switch between sequential and random modes
+        function switchMode() {
+            isRandomMode = document.querySelector('input[name="mode"]:checked').value === 'random';
+            
+            // Regenerate sequence and reset state
+            initFlashcards();
         }
 
         // Parse flashcard data from Markdown
@@ -456,6 +566,12 @@
         checkBtn.addEventListener('click', checkAnswer);
         nextBtn.addEventListener('click', nextCard);
         prevBtn.addEventListener('click', prevCard);
+        shuffleBtn.addEventListener('click', shuffleCards);
+        
+        // Add event listeners for mode switching
+        modeRadios.forEach(radio => {
+            radio.addEventListener('change', switchMode);
+        });
 
         // Load the markdown file when page loads
         window.addEventListener('DOMContentLoaded', loadMarkdownFile);
