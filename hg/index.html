@@ -114,10 +114,27 @@
             text-align: center;
             flex: 1;
         }
+        #loadingMessage {
+            text-align: center;
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        #errorMessage {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 20px 0;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <h1>Geography Flashcards</h1>
+    
+    <div id="loadingMessage">Loading flashcards from human_geography_questions.md...</div>
+    <div id="errorMessage"></div>
     
     <div class="stats">
         <div>
@@ -152,33 +169,8 @@
     </div>
     
     <script>
-        // Sample data from markdown file
-        const flashcardData = [
-            {
-                question: "1. Chinatown is an example of a",
-                options: [
-                    "A. functional region.",
-                    "B. nodal region.",
-                    "C. perceptual region.",
-                    "D. formal region.",
-                    "E. uniform region."
-                ],
-                correctAnswer: "C",
-                explanation: "Chinatown is an example of a perceptual region. Perceptual regions are defined by people's feelings and attitudes about areas. They exist as intellectual concepts."
-            },
-            {
-                question: "2. The map created by Lewis and Clark could be called a",
-                options: [
-                    "A. thematic map.",
-                    "B. choropleth map.",
-                    "C. graduated circle map.",
-                    "D. general purpose map.",
-                    "E. topographic map."
-                ],
-                correctAnswer: "D",
-                explanation: "The map created by Lewis and Clark could be called a general purpose map. General purpose maps show a variety of features like roads, political boundaries, water, urban areas, and sometimes topography."
-            }
-        ];
+        // Flashcard data will be stored here
+        const flashcardData = [];
 
         // App state
         let currentCardIndex = 0;
@@ -199,6 +191,8 @@
         const totalCardsProgressSpan = document.getElementById('totalCardsProgress');
         const correctAnswersSpan = document.getElementById('correctAnswers');
         const incorrectAnswersSpan = document.getElementById('incorrectAnswers');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const errorMessage = document.getElementById('errorMessage');
 
         // Initialize flashcards
         function initFlashcards() {
@@ -331,14 +325,6 @@
             prevBtn.disabled = currentCardIndex <= 0;
         }
 
-        // Add event listeners
-        checkBtn.addEventListener('click', checkAnswer);
-        nextBtn.addEventListener('click', nextCard);
-        prevBtn.addEventListener('click', prevCard);
-
-        // Initialize
-        initFlashcards();
-
         // Parse flashcard data from Markdown
         function parseMarkdownToFlashcards(markdown) {
             const flashcards = [];
@@ -392,49 +378,87 @@
             return flashcards;
         }
 
-        // Function to load markdown content
-        function loadMarkdownContent(markdownContent) {
-            const parsedFlashcards = parseMarkdownToFlashcards(markdownContent);
-            
-            if (parsedFlashcards.length > 0) {
-                // Replace the sample data with parsed data
-                flashcardData.length = 0;
-                parsedFlashcards.forEach(card => flashcardData.push(card));
-                
-                // Reinitialize the flashcards
-                currentCardIndex = 0;
-                selectedOption = null;
-                answered = false;
-                correctCount = 0;
-                incorrectCount = 0;
-                correctAnswersSpan.textContent = '0';
-                incorrectAnswersSpan.textContent = '0';
-                
-                initFlashcards();
-            }
+        // Function to load markdown file from same directory
+        function loadMarkdownFile() {
+            fetch('human_geography_questions.md')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('File not found. Make sure human_geography_questions.md is in the same directory as this HTML file.');
+                    }
+                    return response.text();
+                })
+                .then(markdownContent => {
+                    const parsedFlashcards = parseMarkdownToFlashcards(markdownContent);
+                    
+                    if (parsedFlashcards.length > 0) {
+                        // Use parsed data
+                        flashcardData.length = 0;
+                        parsedFlashcards.forEach(card => flashcardData.push(card));
+                        
+                        // Initialize the flashcards
+                        initFlashcards();
+                        loadingMessage.style.display = 'none';
+                    } else {
+                        throw new Error('Could not parse any flashcards from the file. Check the file format.');
+                    }
+                })
+                .catch(error => {
+                    loadingMessage.style.display = 'none';
+                    errorMessage.textContent = error.message;
+                    errorMessage.style.display = 'block';
+                    
+                    // Load sample data as fallback
+                    loadSampleData();
+                });
         }
 
-        // For demonstration purposes, you can uncomment this to allow users to load their own Markdown file
-        /*
-        // Add file input for loading markdown
-        const fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.id = 'markdownFile';
-        fileInput.accept = '.md';
-        document.body.insertBefore(fileInput, document.querySelector('h1').nextSibling);
-        
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+        // Load sample data as fallback
+        function loadSampleData() {
+            console.log('Loading sample data as fallback...');
             
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const content = e.target.result;
-                loadMarkdownContent(content);
-            };
-            reader.readAsText(file);
-        });
-        */
+            // Sample data
+            const sampleData = [
+                {
+                    question: "1. Chinatown is an example of a",
+                    options: [
+                        "A. functional region.",
+                        "B. nodal region.",
+                        "C. perceptual region.",
+                        "D. formal region.",
+                        "E. uniform region."
+                    ],
+                    correctAnswer: "C",
+                    explanation: "Chinatown is an example of a perceptual region. Perceptual regions are defined by people's feelings and attitudes about areas."
+                },
+                {
+                    question: "2. The map created by Lewis and Clark could be called a",
+                    options: [
+                        "A. thematic map.",
+                        "B. choropleth map.",
+                        "C. graduated circle map.",
+                        "D. general purpose map.",
+                        "E. topographic map."
+                    ],
+                    correctAnswer: "D",
+                    explanation: "The map created by Lewis and Clark could be called a general purpose map. General purpose maps show various features including topography, political boundaries, etc."
+                }
+            ];
+            
+            // Use sample data
+            flashcardData.length = 0;
+            sampleData.forEach(card => flashcardData.push(card));
+            
+            // Initialize the flashcards
+            initFlashcards();
+        }
+
+        // Add event listeners
+        checkBtn.addEventListener('click', checkAnswer);
+        nextBtn.addEventListener('click', nextCard);
+        prevBtn.addEventListener('click', prevCard);
+
+        // Load the markdown file when page loads
+        window.addEventListener('DOMContentLoaded', loadMarkdownFile);
     </script>
 </body>
 </html>
