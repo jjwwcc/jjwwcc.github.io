@@ -1,236 +1,440 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 搜题闪卡</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <title>Geography Flashcards</title>
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .flashcard-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
         }
         .card {
-            background-color: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-            padding: 2rem;
-            max-width: 36rem;
-            width: 100%;
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: 2rem;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: none;
         }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.15), 0 10px 15px -7px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: white;
-            margin-bottom: 1rem;
-        }
-
-        .card-description {
-            color: rgb(209, 213, 219);
-            margin-bottom: 1.5rem;
-        }
-
-        .option {
-            color: rgb(229, 231, 235);
-            margin-bottom: 0.5rem;
-        }
-
-        .option-label {
-            font-weight: 500;
-            margin-right: 0.25rem;
-        }
-
-        .error-message {
-            color: rgb(248, 113, 113);
-            background-color: rgba(254, 226, 226, 1);
-            padding: 1rem;
-            border-radius: 0.375rem;
-            margin-bottom: 1rem;
-            border: 1px solid rgb(252, 165, 165);
-            display: flex;
-            align-items: center;
-        }
-
-        .error-icon {
-            margin-right: 0.75rem;
-            width: 1rem;
-            height: 1rem;
-            stroke-width: 2;
-            fill: none;
-            stroke: currentColor;
-        }
-
-        .get-question-button {
-            background-image: linear-gradient(to right, rgb(167, 139, 250), rgb(217, 70, 239));
-            color: white;
-            font-weight: 600;
-            padding: 0.75rem 1.5rem;
-            border-radius: 1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 6px 10px -2px rgba(0, 0, 0, 0.15), 0 3px 7px -3px rgba(0, 0, 0, 0.07);
-            cursor: pointer;
-            border: none;
+        .card.active {
             display: block;
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: 2rem;
-            width: fit-content;
         }
-
-        .get-question-button:hover {
-            background-image: linear-gradient(to right, rgb(145, 107, 230), rgb(192, 38, 211));
-            transform: translateY(-2px);
-            box-shadow: 0 8px 12px -4px rgba(0, 0, 0, 0.18), 0 4px 9px -4px rgba(0, 0, 0, 0.12);
+        .question {
+            font-size: 18px;
+            margin-bottom: 15px;
         }
-
-        .get-question-button:disabled {
-            opacity: 0.7;
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .option {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .option:hover {
+            background-color: #efefef;
+        }
+        .option.selected {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .option.incorrect {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .option.correct {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
             cursor: not-allowed;
-            background-image: linear-gradient(to right, rgb(167, 139, 250), rgb(217, 70, 239));
+        }
+        .feedback {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .feedback.correct {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .feedback.incorrect {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .explanation {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            display: none;
+        }
+        .progress {
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .stats div {
+            text-align: center;
+            flex: 1;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-black p-4 flex items-center justify-center min-h-screen">
-    <div class="max-w-md w-full">
-        <h1 class="text-3xl font-bold text-white mb-6 text-center">
-            AI 搜题闪卡
-        </h1>
-
-        <div class="mb-4 text-center">
-            <button id="save-token-button" class="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 hover:text-blue-300 border border-blue-500/30 rounded-md px-4 py-2">
-                存储 API Token
-            </button>
+<body>
+    <h1>Geography Flashcards</h1>
+    
+    <div class="stats">
+        <div>
+            <h3>Total</h3>
+            <span id="totalCards">0</span>
         </div>
-
-        <button id="get-question-button" class="get-question-button">
-            加载中...
-        </button>
-
-        <div id="error-container" class="error-message" style="display: none;">
-            <svg xmlns="http://www.w3.org/2000/svg" class="error-icon" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 011.414 0L10 8.586l.879-.88a1 1 0 111.414 1.414L11.414 10l.88.879a1 1 0 01-1.414 1.414L10 11.414l-.879.88a1 1 0 01-1.414-1.414L8.586 10l-.88-.879a1 1 0 010-1.414z"/></svg>
-            <span id="error-text"></span>
+        <div>
+            <h3>Correct</h3>
+            <span id="correctAnswers">0</span>
         </div>
-
-        <div id="question-card" class="card" style="display: none;">
-            <h2 class="card-title">题目</h2>
-            <p class="card-description" id="question-text"></p>
-            <div class="option" id="option-a"><span class="option-label">A:</span> </div>
-            <div class="option" id="option-b"><span class="option-label">B:</span> </div>
-            <div class="option" id="option-c"><span class="option-label">C:</span> </div>
-            <div class="option" id="option-d"><span class="option-label">D:</span> </div>
-            <div class="option" id="option-e" style="display: none;"><span class="option-label">E:</span> </div>
+        <div>
+            <h3>Incorrect</h3>
+            <span id="incorrectAnswers">0</span>
         </div>
     </div>
-
+    
+    <div class="progress">
+        Question <span id="currentCard">1</span> of <span id="totalCardsProgress">0</span>
+    </div>
+    
+    <div class="flashcard-container">
+        <div id="cards"></div>
+        
+        <div class="feedback" id="feedback"></div>
+        <div class="explanation" id="explanation"></div>
+        
+        <div class="controls">
+            <button id="prevBtn" disabled>Previous</button>
+            <button id="checkBtn">Check Answer</button>
+            <button id="nextBtn" disabled>Next</button>
+        </div>
+    </div>
+    
     <script>
-        const questionCard = document.getElementById('question-card');
-        const questionText = document.getElementById('question-text');
-        const optionA = document.getElementById('option-a');
-        const optionB = document.getElementById('option-b');
-        const optionC = document.getElementById('option-c');
-        const optionD = document.getElementById('option-d');
-        const optionE = document.getElementById('option-e');
-        const errorContainer = document.getElementById('error-container');
-        const errorText = document.getElementById('error-text');
-        const getQuestionButton = document.getElementById('get-question-button');
-        const saveTokenButton = document.getElementById('save-token-button');
-
-        let apiToken = localStorage.getItem('apiToken');
-
-        if (apiToken) {
-            getQuestionButton.textContent = '获取题目';
-        }
-
-        saveTokenButton.addEventListener('click', () => {
-            const token = prompt('请输入您的 API Token:');
-            if (token) {
-                apiToken = token;
-                localStorage.setItem('apiToken', token);
-                alert('API Token 已保存！');
-                if (!getQuestionButton.disabled) {
-                    getQuestionButton.textContent = '获取题目';
-                }
-            } else {
-                alert('未输入 API Token，请重试。');
+        // Sample data from markdown file
+        const flashcardData = [
+            {
+                question: "1. Chinatown is an example of a",
+                options: [
+                    "A. functional region.",
+                    "B. nodal region.",
+                    "C. perceptual region.",
+                    "D. formal region.",
+                    "E. uniform region."
+                ],
+                correctAnswer: "C",
+                explanation: "Chinatown is an example of a perceptual region. Perceptual regions are defined by people's feelings and attitudes about areas. They exist as intellectual concepts."
+            },
+            {
+                question: "2. The map created by Lewis and Clark could be called a",
+                options: [
+                    "A. thematic map.",
+                    "B. choropleth map.",
+                    "C. graduated circle map.",
+                    "D. general purpose map.",
+                    "E. topographic map."
+                ],
+                correctAnswer: "D",
+                explanation: "The map created by Lewis and Clark could be called a general purpose map. General purpose maps show a variety of features like roads, political boundaries, water, urban areas, and sometimes topography."
             }
-        });
+        ];
 
-        getQuestionButton.addEventListener('click', () => {
-            if (!apiToken) {
-                setError('请先在本地存储 API Token。');
-                return;
-            }
+        // App state
+        let currentCardIndex = 0;
+        let selectedOption = null;
+        let answered = false;
+        let correctCount = 0;
+        let incorrectCount = 0;
 
-            getQuestionButton.disabled = true;
-            getQuestionButton.textContent = '加载中...';
-            errorContainer.style.display = 'none';
-            questionCard.style.display = 'none';
+        // DOM elements
+        const cardsContainer = document.getElementById('cards');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const checkBtn = document.getElementById('checkBtn');
+        const feedbackDiv = document.getElementById('feedback');
+        const explanationDiv = document.getElementById('explanation');
+        const currentCardSpan = document.getElementById('currentCard');
+        const totalCardsSpan = document.getElementById('totalCards');
+        const totalCardsProgressSpan = document.getElementById('totalCardsProgress');
+        const correctAnswersSpan = document.getElementById('correctAnswers');
+        const incorrectAnswersSpan = document.getElementById('incorrectAnswers');
 
-            fetch('https://api.cloudflare.com/client/v4/accounts/521d053efb59f680091e0e1d22d5144d/autorag/rags/humangeo/ai-search', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiToken}`,
-                    'Origin': window.location.origin // Add the Origin header
-                },
-                body: JSON.stringify({
-                    query: 'please give me random question and give me a b c d e option too'
-                })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data && data.result) {
-                    questionText.textContent = data.result.question;
-                    optionA.textContent = `A: ${data.result.a}`;
-                    optionB.textContent = `B: ${data.result.b}`;
-                    optionC.textContent = `C: ${data.result.c}`;
-                    optionD.textContent = `D: ${data.result.d}`;
-                    if (data.result.e) {
-                        optionE.textContent = `E: ${data.result.e}`;
-                        optionE.style.display = '';
-                    } else {
-                        optionE.style.display = 'none';
-                    }
-                    questionCard.style.display = 'block';
-                } else {
-                    setError('API 返回数据格式不正确。');
-                }
-            })
-            .catch(error => {
-                setError(error.message);
-            })
-            .finally(() => {
-                getQuestionButton.disabled = false;
-                getQuestionButton.textContent = '获取题目';
+        // Initialize flashcards
+        function initFlashcards() {
+            cardsContainer.innerHTML = '';
+            
+            flashcardData.forEach((data, index) => {
+                const card = document.createElement('div');
+                card.className = `card ${index === 0 ? 'active' : ''}`;
+                
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.textContent = data.question;
+                
+                const optionsList = document.createElement('ul');
+                optionsList.className = 'options';
+                
+                data.options.forEach((option, optionIndex) => {
+                    const optionItem = document.createElement('li');
+                    optionItem.className = 'option';
+                    optionItem.textContent = option;
+                    optionItem.dataset.index = optionIndex;
+                    
+                    optionItem.addEventListener('click', () => {
+                        if (answered) return;
+                        
+                        document.querySelectorAll('.card.active .option').forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        
+                        optionItem.classList.add('selected');
+                        selectedOption = option.charAt(0);
+                    });
+                    
+                    optionsList.appendChild(optionItem);
+                });
+                
+                card.appendChild(questionDiv);
+                card.appendChild(optionsList);
+                cardsContainer.appendChild(card);
             });
-        });
-
-        function setError(message) {
-            errorText.textContent = message;
-            errorContainer.style.display = 'flex';
-            questionCard.style.display = 'none';
-            getQuestionButton.textContent = '获取题目';
-            getQuestionButton.disabled = false;
+            
+            totalCardsSpan.textContent = flashcardData.length;
+            totalCardsProgressSpan.textContent = flashcardData.length;
+            updateCardCounter();
         }
+
+        // Check answer
+        function checkAnswer() {
+            if (answered || selectedOption === null) return;
+            
+            const correctAnswer = flashcardData[currentCardIndex].correctAnswer;
+            const isCorrect = selectedOption === correctAnswer;
+            
+            // Mark options as correct/incorrect
+            document.querySelectorAll('.card.active .option').forEach(option => {
+                const optionLetter = option.textContent.charAt(0);
+                
+                if (optionLetter === correctAnswer) {
+                    option.classList.add('correct');
+                } else if (optionLetter === selectedOption && selectedOption !== correctAnswer) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            // Show feedback
+            feedbackDiv.textContent = isCorrect 
+                ? "Correct! Well done." 
+                : `Incorrect. The correct answer is ${correctAnswer}.`;
+            feedbackDiv.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackDiv.style.display = 'block';
+            
+            // Show explanation
+            explanationDiv.textContent = flashcardData[currentCardIndex].explanation;
+            explanationDiv.style.display = 'block';
+            
+            // Update stats
+            if (isCorrect) {
+                correctCount++;
+                correctAnswersSpan.textContent = correctCount;
+            } else {
+                incorrectCount++;
+                incorrectAnswersSpan.textContent = incorrectCount;
+            }
+            
+            // Enable next button
+            nextBtn.disabled = currentCardIndex >= flashcardData.length - 1;
+            checkBtn.disabled = true;
+            
+            answered = true;
+        }
+
+        // Navigate to next card
+        function nextCard() {
+            if (currentCardIndex >= flashcardData.length - 1) return;
+            
+            document.querySelector('.card.active').classList.remove('active');
+            currentCardIndex++;
+            document.querySelectorAll('.card')[currentCardIndex].classList.add('active');
+            
+            resetCardState();
+            updateCardCounter();
+        }
+
+        // Navigate to previous card
+        function prevCard() {
+            if (currentCardIndex <= 0) return;
+            
+            document.querySelector('.card.active').classList.remove('active');
+            currentCardIndex--;
+            document.querySelectorAll('.card')[currentCardIndex].classList.add('active');
+            
+            resetCardState();
+            updateCardCounter();
+        }
+
+        // Reset card state
+        function resetCardState() {
+            selectedOption = null;
+            answered = false;
+            feedbackDiv.style.display = 'none';
+            explanationDiv.style.display = 'none';
+            checkBtn.disabled = false;
+            prevBtn.disabled = currentCardIndex <= 0;
+            nextBtn.disabled = !answered && currentCardIndex < flashcardData.length - 1;
+        }
+
+        // Update card counter
+        function updateCardCounter() {
+            currentCardSpan.textContent = currentCardIndex + 1;
+            prevBtn.disabled = currentCardIndex <= 0;
+        }
+
+        // Add event listeners
+        checkBtn.addEventListener('click', checkAnswer);
+        nextBtn.addEventListener('click', nextCard);
+        prevBtn.addEventListener('click', prevCard);
+
+        // Initialize
+        initFlashcards();
+
+        // Parse flashcard data from Markdown
+        function parseMarkdownToFlashcards(markdown) {
+            const flashcards = [];
+            const questionBlocks = markdown.split('## Question');
+            
+            // Skip the first item if it's empty
+            for (let i = 1; i < questionBlocks.length; i++) {
+                const block = questionBlocks[i];
+                
+                // Extract question number, text, options, and correct answer
+                const questionMatch = block.match(/<p><b>(\d+)\.<\/b> (.*?)<\/p>/);
+                if (!questionMatch) continue;
+                
+                const questionNumber = questionMatch[1];
+                const questionText = questionMatch[2];
+                
+                // Extract options
+                const optionsMatch = block.match(/<ul class="qlist">([\s\S]*?)<\/ul>/);
+                if (!optionsMatch) continue;
+                
+                const optionsHtml = optionsMatch[1];
+                const optionsRegex = /<li>(.*?)<\/li>/g;
+                let optionMatch;
+                const options = [];
+                
+                while ((optionMatch = optionsRegex.exec(optionsHtml)) !== null) {
+                    options.push(optionMatch[1]);
+                }
+                
+                // Extract correct answer
+                const answerMatch = block.match(/<p><strong>Correct Answer:<\/strong> (.*?)<\/p>/);
+                if (!answerMatch) continue;
+                
+                const correctAnswer = answerMatch[1];
+                
+                // Extract explanation (if available)
+                let explanation = "";
+                const explanationMatch = block.match(/<p><strong>Explanation:<\/strong><\/p>\s*<p>(.*?)<\/p>/);
+                if (explanationMatch) {
+                    explanation = explanationMatch[1];
+                }
+                
+                flashcards.push({
+                    question: `${questionNumber}. ${questionText}`,
+                    options: options,
+                    correctAnswer: correctAnswer,
+                    explanation: explanation || `Explanation for question ${questionNumber}.`
+                });
+            }
+            
+            return flashcards;
+        }
+
+        // Function to load markdown content
+        function loadMarkdownContent(markdownContent) {
+            const parsedFlashcards = parseMarkdownToFlashcards(markdownContent);
+            
+            if (parsedFlashcards.length > 0) {
+                // Replace the sample data with parsed data
+                flashcardData.length = 0;
+                parsedFlashcards.forEach(card => flashcardData.push(card));
+                
+                // Reinitialize the flashcards
+                currentCardIndex = 0;
+                selectedOption = null;
+                answered = false;
+                correctCount = 0;
+                incorrectCount = 0;
+                correctAnswersSpan.textContent = '0';
+                incorrectAnswersSpan.textContent = '0';
+                
+                initFlashcards();
+            }
+        }
+
+        // For demonstration purposes, you can uncomment this to allow users to load their own Markdown file
+        /*
+        // Add file input for loading markdown
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.id = 'markdownFile';
+        fileInput.accept = '.md';
+        document.body.insertBefore(fileInput, document.querySelector('h1').nextSibling);
+        
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                loadMarkdownContent(content);
+            };
+            reader.readAsText(file);
+        });
+        */
     </script>
 </body>
 </html>
