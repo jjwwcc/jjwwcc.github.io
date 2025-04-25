@@ -454,54 +454,55 @@
         function parseMarkdownToFlashcards(markdown) {
             const flashcards = [];
             const questionBlocks = markdown.split('## Question');
-            
-            // Skip the first item if it's empty
+        
             for (let i = 1; i < questionBlocks.length; i++) {
                 const block = questionBlocks[i];
-                
-                // Extract question number, text, options, and correct answer
-                const questionMatch = block.match(/<p><b>(\d+)\.<\/b> (.*?)<\/p>/);
-                if (!questionMatch) continue;
-                
-                const questionNumber = questionMatch[1];
-                const questionText = questionMatch[2];
-                
+        
+                // Extract the entire HTML inside <div class="mcontent">...</div>
+                const mcontentMatch = block.match(/<div class="mcontent">([\s\S]*?)<\/div>/);
+                if (!mcontentMatch) continue;
+        
+                const mcontent = mcontentMatch[1];
+        
+                // Extract question number and main text
+                const questionNumberMatch = mcontent.match(/<p><strong>Question:\s*(\d+)<\/strong><\/p>/);
+                const questionNumber = questionNumberMatch ? questionNumberMatch[1] : `?`;
+        
+                // Extract everything up until the <ul class="qlist"> as the full question, including any images or text before
+                const questionHtmlMatch = mcontent.match(/([\s\S]*?)<ul class="qlist">/);
+                const questionHtml = questionHtmlMatch ? questionHtmlMatch[1].trim() : '';
+        
                 // Extract options
-                const optionsMatch = block.match(/<ul class="qlist">([\s\S]*?)<\/ul>/);
-                if (!optionsMatch) continue;
-                
-                const optionsHtml = optionsMatch[1];
-                const optionsRegex = /<li>(.*?)<\/li>/g;
-                let optionMatch;
+                const optionsMatch = mcontent.match(/<ul class="qlist">([\s\S]*?)<\/ul>/);
                 const options = [];
-                
-                while ((optionMatch = optionsRegex.exec(optionsHtml)) !== null) {
-                    options.push(optionMatch[1]);
+                if (optionsMatch) {
+                    const optionsHtml = optionsMatch[1];
+                    const optionsRegex = /<li>(.*?)<\/li>/g;
+                    let optionMatch;
+                    while ((optionMatch = optionsRegex.exec(optionsHtml)) !== null) {
+                        options.push(optionMatch[1]);
+                    }
                 }
-                
+        
                 // Extract correct answer
-                const answerMatch = block.match(/<p><strong>Correct Answer:<\/strong> (.*?)<\/p>/);
-                if (!answerMatch) continue;
-                
-                const correctAnswer = answerMatch[1];
-                
-                // Extract explanation (if available)
-                let explanation = "";
-                const explanationMatch = block.match(/<p><strong>Explanation:<\/strong><\/p>\s*<p>(.*?)<\/p>/);
-                if (explanationMatch) {
-                    explanation = explanationMatch[1];
-                }
-                
+                const answerMatch = mcontent.match(/<p><strong>Correct Answer:<\/strong>\s*(\w)<\/p>/);
+                const correctAnswer = answerMatch ? answerMatch[1] : '?';
+        
+                // Extract explanation section (everything after "Explanation" heading to end of block)
+                const explanationMatch = mcontent.match(/<strong>Explanation:<\/strong><\/p>([\s\S]*)$/);
+                const explanationHtml = explanationMatch ? explanationMatch[1].trim() : "No explanation provided.";
+        
                 flashcards.push({
-                    question: `${questionNumber}. ${questionText}`,
+                    question: questionHtml,         // full HTML including images
                     options: options,
                     correctAnswer: correctAnswer,
-                    explanation: explanation || `Explanation for question ${questionNumber}.`
+                    explanation: explanationHtml
                 });
             }
-            
+        
             return flashcards;
         }
+
 
         // Function to load markdown file from same directory
         function loadMarkdownFile() {
