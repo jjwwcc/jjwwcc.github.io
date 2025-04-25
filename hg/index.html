@@ -259,22 +259,7 @@
                 
                 const questionDiv = document.createElement('div');
                 questionDiv.className = 'question';
-                questionDiv.innerHTML = cardData.question; // 用 innerHTML 保留 img 或 HTML 标签
-                
-                // Insert question first
-                card.appendChild(questionDiv);
-                
-                // Then process and append image if present
-                // const imgMatch = cardData.question.match(/<img.*?src=["'](.*?)["'].*?>/);
-                // if (imgMatch) {
-                //     const imgElement = document.createElement('img');
-                //     imgElement.src = imgMatch[1];
-                //     imgElement.alt = 'Flashcard image';
-                //     imgElement.style.maxWidth = '100%';
-                //     imgElement.style.marginBottom = '15px';
-                //     card.appendChild(imgElement);
-                // }
-
+                questionDiv.textContent = cardData.question;
                 
                 const optionsList = document.createElement('ul');
                 optionsList.className = 'options';
@@ -454,55 +439,54 @@
         function parseMarkdownToFlashcards(markdown) {
             const flashcards = [];
             const questionBlocks = markdown.split('## Question');
-        
+            
+            // Skip the first item if it's empty
             for (let i = 1; i < questionBlocks.length; i++) {
                 const block = questionBlocks[i];
-        
-                // Extract the entire HTML inside <div class="mcontent">...</div>
-                const mcontentMatch = block.match(/<div class="mcontent">([\s\S]*?)<\/div>/);
-                if (!mcontentMatch) continue;
-        
-                const mcontent = mcontentMatch[1];
-        
-                // Extract question number and main text
-                const questionNumberMatch = mcontent.match(/<p><strong>Question:\s*(\d+)<\/strong><\/p>/);
-                const questionNumber = questionNumberMatch ? questionNumberMatch[1] : `?`;
-        
-                // Extract everything up until the <ul class="qlist"> as the full question, including any images or text before
-                const questionHtmlMatch = mcontent.match(/([\s\S]*?)<ul class="qlist">/);
-                const questionHtml = questionHtmlMatch ? questionHtmlMatch[1].trim() : '';
-        
+                
+                // Extract question number, text, options, and correct answer
+                const questionMatch = block.match(/<p><b>(\d+)\.<\/b> (.*?)<\/p>/);
+                if (!questionMatch) continue;
+                
+                const questionNumber = questionMatch[1];
+                const questionText = questionMatch[2];
+                
                 // Extract options
-                const optionsMatch = mcontent.match(/<ul class="qlist">([\s\S]*?)<\/ul>/);
+                const optionsMatch = block.match(/<ul class="qlist">([\s\S]*?)<\/ul>/);
+                if (!optionsMatch) continue;
+                
+                const optionsHtml = optionsMatch[1];
+                const optionsRegex = /<li>(.*?)<\/li>/g;
+                let optionMatch;
                 const options = [];
-                if (optionsMatch) {
-                    const optionsHtml = optionsMatch[1];
-                    const optionsRegex = /<li>(.*?)<\/li>/g;
-                    let optionMatch;
-                    while ((optionMatch = optionsRegex.exec(optionsHtml)) !== null) {
-                        options.push(optionMatch[1]);
-                    }
+                
+                while ((optionMatch = optionsRegex.exec(optionsHtml)) !== null) {
+                    options.push(optionMatch[1]);
                 }
-        
+                
                 // Extract correct answer
-                const answerMatch = mcontent.match(/<p><strong>Correct Answer:<\/strong>\s*(\w)<\/p>/);
-                const correctAnswer = answerMatch ? answerMatch[1] : '?';
-        
-                // Extract explanation section (everything after "Explanation" heading to end of block)
-                const explanationMatch = mcontent.match(/<strong>Explanation:<\/strong><\/p>([\s\S]*)$/);
-                const explanationHtml = explanationMatch ? explanationMatch[1].trim() : "No explanation provided.";
-        
+                const answerMatch = block.match(/<p><strong>Correct Answer:<\/strong> (.*?)<\/p>/);
+                if (!answerMatch) continue;
+                
+                const correctAnswer = answerMatch[1];
+                
+                // Extract explanation (if available)
+                let explanation = "";
+                const explanationMatch = block.match(/<p><strong>Explanation:<\/strong><\/p>\s*<p>(.*?)<\/p>/);
+                if (explanationMatch) {
+                    explanation = explanationMatch[1];
+                }
+                
                 flashcards.push({
-                    question: questionHtml,         // full HTML including images
+                    question: `${questionNumber}. ${questionText}`,
                     options: options,
                     correctAnswer: correctAnswer,
-                    explanation: explanationHtml
+                    explanation: explanation || `Explanation for question ${questionNumber}.`
                 });
             }
-        
+            
             return flashcards;
         }
-
 
         // Function to load markdown file from same directory
         function loadMarkdownFile() {
