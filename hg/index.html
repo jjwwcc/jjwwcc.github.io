@@ -259,7 +259,22 @@
                 
                 const questionDiv = document.createElement('div');
                 questionDiv.className = 'question';
-                questionDiv.textContent = cardData.question;
+                questionDiv.innerHTML = cardData.question; // 用 innerHTML 保留 img 或 HTML 标签
+                
+                // Insert question first
+                card.appendChild(questionDiv);
+                
+                // Then process and append image if present
+                const imgMatch = cardData.question.match(/<img.*?src=["'](.*?)["'].*?>/);
+                if (imgMatch) {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = imgMatch[1];
+                    imgElement.alt = 'Flashcard image';
+                    imgElement.style.maxWidth = '100%';
+                    imgElement.style.marginBottom = '15px';
+                    card.appendChild(imgElement);
+                }
+
                 
                 const optionsList = document.createElement('ul');
                 optionsList.className = 'options';
