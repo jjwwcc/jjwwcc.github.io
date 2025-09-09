@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SlopeBotV2 Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #007bff;
+        }
+        .section {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #0056b3;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        .info-item {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        .info-item strong {
+            display: block;
+            color: #555;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .positive {
+            color: green;
+        }
+        .negative {
+            color: red;
+        }
+        #refresh-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #refresh-btn:hover {
+            background-color: #218838;
+        }
+        #last-updated {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>SlopeBotV2 Dashboard for TSLA</h1>
+    <button id="refresh-btn">Refresh Data</button>
+    <p id="last-updated"></p>
+
+    <div class="section" id="strategy-info">
+        <h2>Strategy Info</h2>
+        <div class="info-grid"></div>
+    </div>
+
+    <div class="section" id="positions">
+        <h2>Positions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Index</th>
+                    <th>Entry Time</th>
+                    <th>Entry Price</th>
+                    <th>Entry Qty</th>
+                    <th>Is Open</th>
+                    <th>TP Submitted</th>
+                    <th>Closed Realized</th>
+                    <th>Unrealized PNL</th>
+                    <th>Parent Status</th>
+                    <th>TP Status</th>
+                    <th>Exit Status</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="section" id="market-data">
+        <h2>Market Data</h2>
+        <div class="info-grid"></div>
+    </div>
+
+    <div class="section" id="capacity-info">
+        <h2>Capacity Info</h2>
+        <div class="info-grid"></div>
+    </div>
+
+    <div class="section" id="config-info">
+        <h2>Config Info</h2>
+        <div class="info-grid"></div>
+    </div>
+
+    <div class="section" id="summary">
+        <h2>Summary</h2>
+        <div class="info-grid"></div>
+    </div>
+
+    <div class="section" id="connection-info">
+        <h2>Connection Info</h2>
+        <div class="info-grid"></div>
+    </div>
+
+    <script>
+        const API_URL = 'https://postget.me/ibcNDjBX2rnp/data/webhook';
+
+        async function fetchData() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                renderData(data);
+                document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleString()}`;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                alert('Failed to fetch data from API.');
+            }
+        }
+
+        function renderData(data) {
+            // Strategy Info
+            const strategyGrid = document.querySelector('#strategy-info .info-grid');
+            strategyGrid.innerHTML = '';
+            Object.entries(data.strategy_info).forEach(([key, value]) => {
+                const item = document.createElement('div');
+                item.classList.add('info-item');
+                item.innerHTML = `<strong>${formatKey(key)}</strong>${value ?? 'N/A'}`;
+                strategyGrid.appendChild(item);
+            });
+
+            // Positions Table
+            const positionsBody = document.querySelector('#positions tbody');
+            positionsBody.innerHTML = '';
+            if (data.positions.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="11">No positions available</td>';
+                positionsBody.appendChild(row);
+            } else {
+                data.positions.forEach(pos => {
+                    const row = document.createElement('tr');
+                    const pnlClass = pos.unrealized_pnl > 0 ? 'positive' : pos.unrealized_pnl < 0 ? 'negative' : '';
+                    row.innerHTML = `
+                        <td>${pos.slot_index}</td>
+                        <td>${pos.entry_time}</td>
+                        <td>${pos.entry_price ?? 'N/A'}</td>
+                        <td>${pos.entry_qty ?? 'N/A'}</td>
+                        <td>${pos.is_open ? 'Yes' : 'No'}</td>
+                        <td>${pos.tp_submitted ? 'Yes' : 'No'}</td>
+                        <td>${pos.closed_realized ? 'Yes' : 'No'}</td>
+                        <td class="${pnlClass}">${pos.unrealized_pnl ?? 'N/A'}</td>
+                        <td>${pos.parent_order_status ?? 'N/A'}</td>
+                        <td>${pos.tp_order_status ?? 'N/A'}</td>
+                        <td>${pos.exit_order_status ?? 'N/A'}</td>
+                    `;
+                    positionsBody.appendChild(row);
+                });
+            }
+
+            // Market Data
+            const marketGrid = document.querySelector('#market-data .info-grid');
+            marketGrid.innerHTML = '';
+            Object.entries(data.market_data).forEach(([key, value]) => {
+                const item = document.createElement('div');
+                item.classList.add('info-item');
+                item.innerHTML = `<strong>${formatKey(key)}</strong>${value ?? 'N/A'}`;
+                marketGrid.appendChild(item);
+            });
+
+            // Capacity Info
+            const capacityGrid = document.querySelector('#capacity-info .info-grid');
+            capacityGrid.innerHTML = '';
+            Object.entries(data.capacity_info).forEach(([key, value]) => {
+                const item = document.createElement('div');
+                item.classList.add('info-item');
+                item.innerHTML = `<strong>${formatKey(key)}</strong>${value ?? 'N/A'}`;
+                capacityGrid.appendChild(item);
+            });
+
+            // Config Info
+            const configGrid = document.querySelector('#config-info .info-grid');
+            configGrid.innerHTML = '';
+            Object.entries(data.config_info).forEach(([key, value]) => {
+                const item = document.createElement('div');
+                item.classList.add('info-item');
+                item.innerHTML = `<strong>${formatKey(key)}</strong>${value ?? 'N/A'}`;
+                configGrid.appendChild(item);
+            });
+
+            // Summary
+            const summaryGrid = document.querySelector('#summary .info-grid');
+            summaryGrid.innerHTML = '';
+            Object.entries(data.summary).forEach(([key, value]) => {
+                const item = document.createElement('div');
+                item.classList.add('info-item');
+                const pnlClass = key.includes('pnl') || key.includes('revenue') ? (value > 0 ? 'positive' : value < 0 ? 'negative' : '') : '';
+                item.innerHTML = `<strong>${formatKey(key)}</strong><span class="${pnlClass}">${value ?? 'N/A'}</span>`;
+                summaryGrid.appendChild(item);
+            });
+
+            // Connection Info
+            const connectionGrid = document.querySelector('#connection-info .info-grid');
+            connectionGrid.innerHTML = '';
+            Object.entries(data.connection_info).forEach(([key, value]) => {
+                const item = document.createElement('div');
+                item.classList.add('info-item');
+                item.innerHTML = `<strong>${formatKey(key)}</strong>${value ?? 'N/A'}`;
+                connectionGrid.appendChild(item);
+            });
+        }
+
+        function formatKey(key) {
+            return key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        }
+
+        // Initial fetch
+        fetchData();
+
+        // Refresh button
+        document.getElementById('refresh-btn').addEventListener('click', fetchData);
+
+        // Auto-refresh every 30 seconds
+        setInterval(fetchData, 30000);
+    </script>
+</body>
+</html>
