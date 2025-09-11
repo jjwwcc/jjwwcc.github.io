@@ -526,6 +526,53 @@
         let candlestickSeries = null;
         let lineSeriesMap = new Map();
 
+        // === Positions change sound (NEW) ===
+        let lastPositionsCount = null;
+        let audioCtx = null;
+
+        function ensureAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playBeep(freq = 880, durationMs = 140, type = 'sine', volume = 0.03) {
+            try {
+                ensureAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+                gain.gain.value = volume;
+                osc.connect(gain).connect(audioCtx.destination);
+                const now = audioCtx.currentTime;
+                osc.start(now);
+                osc.stop(now + durationMs / 1000);
+            } catch (e) {
+                console.warn('Beep error:', e);
+            }
+        }
+
+        function playIncrease() { playBeep(1100, 150); } // 增加：高一点
+        function playDecrease() { playBeep(440, 150); }  // 减少：低一点
+
+        // 解决浏览器自动播放限制：首次用户交互时解锁
+        function setupAudioUnlock() {
+            const unlock = () => {
+                try {
+                    ensureAudio();
+                    if (audioCtx.state === 'suspended') audioCtx.resume();
+                } catch { }
+                document.removeEventListener('click', unlock);
+                document.removeEventListener('keydown', unlock);
+                document.removeEventListener('touchstart', unlock);
+            };
+            document.addEventListener('click', unlock, { once: true });
+            document.addEventListener('keydown', unlock, { once: true });
+            document.addEventListener('touchstart', unlock, { once: true });
+        }
+
+
         // Store real price data sequence locally
         let priceDataSequence = [];
         const MAX_DATA_POINTS = 1200; // Keep last 1200 data points
@@ -846,6 +893,18 @@
                         <td>${pos.exit_order_status ?? 'N/A'}</td>
                     `;
                     tbody.appendChild(row);
+                    // --- Positions count delta sound (NEW) ---
+                    const newCount = Array.isArray(data.positions) ? data.positions.length : 0;
+                    if (lastPositionsCount !== null) {
+                        if (newCount > lastPositionsCount) {
+                            playIncrease();
+                        } else if (newCount < lastPositionsCount) {
+                            playDecrease();
+                        }
+                    }
+                    lastPositionsCount = newCount;
+                    // --- /NEW ---
+
                 });
             }
         }
@@ -941,6 +1000,8 @@
 
             // Setup refresh button
             document.getElementById('refresh-btn').addEventListener('click', fetchData);
+
+            setupAudioUnlock(); // NEW: 解锁音频以便后续能播放提示音
         }
 
 
