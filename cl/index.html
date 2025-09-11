@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +12,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
@@ -19,13 +20,13 @@
             min-height: 100vh;
             line-height: 1.6;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 15px;
         }
-        
+
         .dashboard-header {
             display: flex;
             justify-content: space-between;
@@ -33,20 +34,20 @@
             margin-bottom: 20px;
             padding: 0 5px;
         }
-        
+
         .dashboard-title {
             font-size: 1.5rem;
             font-weight: 600;
             color: #f1f5f9;
             margin: 0;
         }
-        
+
         .header-controls {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        
+
         #refresh-btn {
             background: rgba(102, 126, 234, 0.2);
             color: #cbd5e1;
@@ -58,20 +59,20 @@
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
         }
-        
+
         #refresh-btn:hover {
             background: rgba(102, 126, 234, 0.3);
             color: #f1f5f9;
             border-color: rgba(102, 126, 234, 0.5);
         }
-        
+
         .status-indicators {
             display: flex;
             align-items: center;
             gap: 10px;
             font-size: 0.8rem;
         }
-        
+
         #last-updated {
             color: #64748b;
             background: rgba(255, 255, 255, 0.05);
@@ -79,7 +80,7 @@
             border-radius: 12px;
             backdrop-filter: blur(10px);
         }
-        
+
         #error-message {
             color: #ef4444;
             background: rgba(239, 68, 68, 0.1);
@@ -88,14 +89,14 @@
             border: 1px solid rgba(239, 68, 68, 0.2);
             backdrop-filter: blur(10px);
         }
-        
+
         .main-dashboard {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
             margin-bottom: 20px;
         }
-        
+
         .metrics-panel {
             background: rgba(255, 255, 255, 0.03);
             border-radius: 12px;
@@ -104,7 +105,7 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
-        
+
         .chart-panel {
             background: rgba(255, 255, 255, 0.03);
             border-radius: 12px;
@@ -113,7 +114,7 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
-        
+
         #chart-container {
             width: 100%;
             height: 280px;
@@ -121,7 +122,7 @@
             border-radius: 8px;
             overflow: hidden;
         }
-        
+
         .section {
             background: rgba(255, 255, 255, 0.03);
             border-radius: 16px;
@@ -130,7 +131,7 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
-        
+
         .panel-title {
             font-size: 1.1rem;
             font-weight: 600;
@@ -139,13 +140,13 @@
             padding-bottom: 8px;
             border-bottom: 1px solid rgba(102, 126, 234, 0.3);
         }
-        
+
         .key-metrics {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 12px;
         }
-        
+
         .metric-item {
             background: rgba(255, 255, 255, 0.05);
             padding: 12px;
@@ -153,13 +154,13 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
         }
-        
+
         .metric-item:hover {
             transform: translateY(-1px);
             background: rgba(255, 255, 255, 0.08);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
-        
+
         .metric-item strong {
             color: #94a3b8;
             font-size: 0.75rem;
@@ -169,21 +170,29 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
-        
+
         .metric-value {
             font-size: 1.3rem;
             font-weight: 700;
             display: block;
         }
-        
-        .positive { color: #10b981; }
-        .negative { color: #ef4444; }
-        .neutral { color: #f59e0b; }
-        
+
+        .positive {
+            color: #10b981;
+        }
+
+        .negative {
+            color: #ef4444;
+        }
+
+        .neutral {
+            color: #f59e0b;
+        }
+
         .positions-section {
             grid-column: 1 / -1;
         }
-        
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -192,7 +201,7 @@
             overflow: hidden;
             font-size: 0.85rem;
         }
-        
+
         th {
             background: rgba(102, 126, 234, 0.1);
             color: #e2e8f0;
@@ -203,21 +212,21 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
-        
+
         td {
             padding: 8px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             color: #cbd5e1;
         }
-        
+
         tr:hover {
             background: rgba(255, 255, 255, 0.03);
         }
-        
-        .other-sections { 
-            display: none; 
+
+        .other-sections {
+            display: none;
         }
-        
+
         .webhook-input-section {
             background: rgba(255, 255, 255, 0.03);
             border-radius: 16px;
@@ -228,18 +237,18 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             text-align: center;
         }
-        
+
         .webhook-input-container h3 {
             color: #f1f5f9;
             margin-bottom: 15px;
             font-size: 1.5rem;
         }
-        
+
         .webhook-input-container p {
             color: #cbd5e1;
             margin-bottom: 20px;
         }
-        
+
         .input-group {
             display: flex;
             gap: 15px;
@@ -248,7 +257,7 @@
             margin-bottom: 15px;
             flex-wrap: wrap;
         }
-        
+
         #webhook-id-field {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -259,17 +268,17 @@
             min-width: 300px;
             backdrop-filter: blur(10px);
         }
-        
+
         #webhook-id-field::placeholder {
             color: #94a3b8;
         }
-        
+
         #webhook-id-field:focus {
             outline: none;
             border-color: rgba(102, 126, 234, 0.5);
             box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
         }
-        
+
         #save-webhook-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -282,54 +291,151 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
-        
+
         #save-webhook-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
-        
+
         .help-text {
             color: #64748b;
             font-size: 0.9rem;
             margin-top: 10px;
         }
-        
+
         @media (max-width: 768px) {
             .main-dashboard {
                 grid-template-columns: 1fr;
                 gap: 15px;
             }
-            
+
             .container {
                 padding: 10px;
             }
-            
+
             #chart-container {
                 height: 250px;
             }
-            
+
             .key-metrics {
                 grid-template-columns: 1fr 1fr;
             }
-            
+
             .dashboard-header {
                 flex-direction: column;
                 gap: 10px;
                 align-items: flex-start;
             }
-            
+
             .header-controls {
                 width: 100%;
                 justify-content: space-between;
             }
         }
+
+        /* === Runtime tiny controls (NEW) === */
+        .runtime-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-right: 6px;
+        }
+
+        .runtime-controls .rc {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 8px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .rc-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            letter-spacing: .02em;
+        }
+
+        .spinner {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .spinner button {
+            width: 22px;
+            height: 22px;
+            line-height: 22px;
+            border-radius: 6px;
+            border: 1px solid rgba(102, 126, 234, .35);
+            background: rgba(102, 126, 234, .18);
+            color: #e2e8f0;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 0;
+            transition: all .2s ease;
+        }
+
+        .spinner button:hover {
+            background: rgba(102, 126, 234, .3);
+        }
+
+        .value-badge {
+            min-width: 18px;
+            text-align: center;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .runtime-status {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            background: rgba(16, 185, 129, .12);
+            border: 1px solid rgba(16, 185, 129, .25);
+            color: #10b981;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .runtime-controls {
+                flex-wrap: wrap;
+            }
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="dashboard-header">
             <h1 class="dashboard-title">Coastline Dashboard</h1>
             <div class="header-controls">
+                <!-- === Runtime controls (NEW) === -->
+                <div class="runtime-controls" title="Adjust runtime caps">
+                    <div class="rc">
+                        <span class="rc-label">Before&nbsp;3pm</span>
+                        <div class="spinner">
+                            <button id="before-dec" aria-label="Decrease before 3pm">◀</button>
+                            <span id="before-value" class="value-badge">2</span>
+                            <button id="before-inc" aria-label="Increase before 3pm">▶</button>
+                        </div>
+                    </div>
+
+                    <div class="rc">
+                        <span class="rc-label">After&nbsp;3pm</span>
+                        <div class="spinner">
+                            <button id="after-dec" aria-label="Decrease after 3pm">◀</button>
+                            <span id="after-value" class="value-badge">1</span>
+                            <button id="after-inc" aria-label="Increase after 3pm">▶</button>
+                        </div>
+                    </div>
+
+                    <span id="runtime-status" class="runtime-status">Saved ✓</span>
+                </div>
+                <!-- === /Runtime controls (NEW) === -->
+
                 <div class="status-indicators">
                     <span id="last-updated"></span>
                     <span id="error-message"></span>
@@ -387,11 +493,26 @@
     </div>
 
     <div class="other-sections">
-        <div class="section" id="market-data"><h2>Market Data</h2><div class="info-grid" id="market-grid"></div></div>
-        <div class="section" id="capacity-info"><h2>Capacity</h2><div class="info-grid" id="capacity-grid"></div></div>
-        <div class="section" id="config-info"><h2>Config</h2><div class="info-grid" id="config-grid"></div></div>
-        <div class="section" id="summary"><h2>Summary</h2><div class="info-grid" id="summary-grid"></div></div>
-        <div class="section" id="connection-info"><h2>Connection</h2><div class="info-grid" id="connection-grid"></div></div>
+        <div class="section" id="market-data">
+            <h2>Market Data</h2>
+            <div class="info-grid" id="market-grid"></div>
+        </div>
+        <div class="section" id="capacity-info">
+            <h2>Capacity</h2>
+            <div class="info-grid" id="capacity-grid"></div>
+        </div>
+        <div class="section" id="config-info">
+            <h2>Config</h2>
+            <div class="info-grid" id="config-grid"></div>
+        </div>
+        <div class="section" id="summary">
+            <h2>Summary</h2>
+            <div class="info-grid" id="summary-grid"></div>
+        </div>
+        <div class="section" id="connection-info">
+            <h2>Connection</h2>
+            <div class="info-grid" id="connection-grid"></div>
+        </div>
     </div>
 
     <script>
@@ -399,22 +520,22 @@
         const WEBHOOK_BASE_URL = 'https://postget.me';
         let webhookId = null;
         let API_URL = null;
-        
+
         // Using webhook data only - no external APIs needed
         let chart = null;
         let candlestickSeries = null;
         let lineSeriesMap = new Map();
-        
+
         // Store real price data sequence locally
         let priceDataSequence = [];
         const MAX_DATA_POINTS = 1200; // Keep last 1200 data points
-        
+
         // Initialize webhook ID from URL or localStorage
         function initializeWebhookId() {
             // Check URL parameters first
             const urlParams = new URLSearchParams(window.location.search);
             const urlWebhookId = urlParams.get('id');
-            
+
             if (urlWebhookId) {
                 // Store the ID from URL
                 localStorage.setItem('webhookId', urlWebhookId);
@@ -429,26 +550,26 @@
                     console.log('No webhook ID found');
                 }
             }
-            
+
             // Set API URL if we have an ID
             if (webhookId) {
                 API_URL = `${WEBHOOK_BASE_URL}/${webhookId}/data/webhook`;
             }
-            
+
             return webhookId;
         }
-        
+
         // Handle webhook ID input and save
         function setupWebhookIdInput() {
             const inputSection = document.getElementById('webhook-id-input');
             const inputField = document.getElementById('webhook-id-field');
             const saveBtn = document.getElementById('save-webhook-btn');
-            
+
             // Show input section if no webhook ID
             if (!webhookId) {
                 inputSection.style.display = 'block';
             }
-            
+
             // Handle save button click
             saveBtn.addEventListener('click', () => {
                 const enteredId = inputField.value.trim();
@@ -457,19 +578,19 @@
                     localStorage.setItem('webhookId', enteredId);
                     webhookId = enteredId;
                     API_URL = `${WEBHOOK_BASE_URL}/${webhookId}/data/webhook`;
-                    
+
                     // Hide input section
                     inputSection.style.display = 'none';
-                    
+
                     // Start fetching data
                     fetchData();
-                    
+
                     console.log('Webhook ID saved:', webhookId);
                 } else {
                     alert('Please enter a valid webhook ID');
                 }
             });
-            
+
             // Handle Enter key in input field
             inputField.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
@@ -485,7 +606,7 @@
             const lastBarTime = webhookData.market_data.last_bar_time;
             const now = new Date();
             const currentTime = Math.floor(now.getTime() / 1000);
-            
+
             // Check if we already have data for this minute (avoid duplicates)
             const lastDataPoint = priceDataSequence[priceDataSequence.length - 1];
             if (lastDataPoint && lastDataPoint.time === currentTime) {
@@ -502,22 +623,22 @@
                     low: currentPrice,
                     close: currentPrice
                 };
-                
+
                 // If we have previous data, use previous close as open
                 if (lastDataPoint) {
                     newDataPoint.open = lastDataPoint.close;
                     newDataPoint.high = Math.max(newDataPoint.open, currentPrice);
                     newDataPoint.low = Math.min(newDataPoint.open, currentPrice);
                 }
-                
+
                 priceDataSequence.push(newDataPoint);
             }
-            
+
             // Keep only the last MAX_DATA_POINTS
             if (priceDataSequence.length > MAX_DATA_POINTS) {
                 priceDataSequence = priceDataSequence.slice(-MAX_DATA_POINTS);
             }
-            
+
             return priceDataSequence;
         }
 
@@ -536,26 +657,26 @@
 
             try {
                 chart = LightweightCharts.createChart(container, {
-                    layout: { 
-                        background: { color: 'transparent' }, 
-                        textColor: '#e2e8f0' 
+                    layout: {
+                        background: { color: 'transparent' },
+                        textColor: '#e2e8f0'
                     },
-                    grid: { 
-                        vertLines: { color: 'rgba(255, 255, 255, 0.1)' }, 
-                        horzLines: { color: 'rgba(255, 255, 255, 0.1)' } 
+                    grid: {
+                        vertLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                        horzLines: { color: 'rgba(255, 255, 255, 0.1)' }
                     },
-                    crosshair: { 
+                    crosshair: {
                         mode: LightweightCharts.CrosshairMode.Normal,
                         vertLine: { color: 'rgba(102, 126, 234, 0.5)', width: 1 },
                         horzLine: { color: 'rgba(102, 126, 234, 0.5)', width: 1 }
                     },
-                    rightPriceScale: { 
+                    rightPriceScale: {
                         borderColor: 'rgba(255, 255, 255, 0.1)',
                         textColor: '#cbd5e1'
                     },
-                    timeScale: { 
-                        borderColor: 'rgba(255, 255, 255, 0.1)', 
-                        timeVisible: true, 
+                    timeScale: {
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        timeVisible: true,
                         secondsVisible: false,
                         textColor: '#cbd5e1'
                     }
@@ -628,7 +749,7 @@
                 document.getElementById('error-message').textContent = 'No webhook ID configured. Please enter your webhook ID.';
                 return;
             }
-            
+
             document.getElementById('error-message').textContent = '';
             try {
                 const response = await fetch(API_URL);
@@ -645,6 +766,8 @@
         async function renderData(data) {
             const symbol = data.strategy_info.symbol || 'TSLA';
             const currentPrice = data.market_data.current_price || 346.72;
+            const beforeCap = data.config_info?.max_open_before_3pm ?? null;
+            const afterCap = data.config_info?.max_open_after_3pm ?? null;
             const entryPrices = data.positions
                 .filter(p => p.entry_price && p.is_open)
                 .map(p => p.entry_price);
@@ -661,12 +784,13 @@
                 updateChartLines(entryPrices, currentPrice);
                 chart.timeScale().fitContent();
             }
-            
+
             // Clear any error messages since we're using webhook data
             document.getElementById('error-message').textContent = '';
 
             // Key Metrics
             const metrics = [
+                { key: 'Cap (B/A)', value: (beforeCap != null && afterCap != null) ? `${beforeCap} / ${afterCap}` : 'N/A', color: 'neutral', id: 'cap-metric' },
                 { key: 'Current Price ($)', value: currentPrice, color: 'neutral' },
                 { key: 'Last Slope', value: data.strategy_info.last_slope, color: data.strategy_info.last_slope > 0 ? 'positive' : data.strategy_info.last_slope < 0 ? 'negative' : 'neutral' },
                 { key: 'Positive Streak', value: data.strategy_info.positive_streak, color: 'neutral' },
@@ -680,13 +804,24 @@
             metrics.forEach(m => {
                 const item = document.createElement('div');
                 item.className = 'metric-item';
+
                 const valSpan = document.createElement('span');
                 valSpan.className = `metric-value ${m.color}`;
-                valSpan.textContent = m.value != null ? m.value.toFixed(2) : 'N/A';
+                if (m.id) valSpan.id = m.id; // 可选：给“Cap (B/A)”打个 id
+
+                let displayValue = 'N/A';
+                if (typeof m.value === 'number') {
+                    displayValue = Number.isFinite(m.value) ? m.value.toFixed(2) : 'N/A';
+                } else if (m.value != null) {
+                    displayValue = String(m.value);
+                }
+                valSpan.textContent = displayValue;
+
                 item.innerHTML = `<strong>${m.key}</strong>`;
                 item.appendChild(valSpan);
                 grid.appendChild(item);
             });
+
 
             // Positions Table
             const tbody = document.getElementById('positions-body');
@@ -714,28 +849,104 @@
                 });
             }
         }
+        // === Runtime controls state & posting (NEW) ===
+        const RUNTIME_URL = 'https://postget.me/ibcNDjBX2rnp/data/runtime'; // 固定目标
+        let maxBefore = 2; // 初始值，可按需改
+        let maxAfter = 1; // 初始值，可按需改
+        const MIN_VAL = 0, MAX_VAL = 10;
 
-        // Initialize the application
+        const clamp = (n) => Math.max(MIN_VAL, Math.min(MAX_VAL, n));
+
+        function updateRuntimeControlsUI() {
+            const bv = document.getElementById('before-value');
+            const av = document.getElementById('after-value');
+            if (bv) bv.textContent = maxBefore;
+            if (av) av.textContent = maxAfter;
+        }
+
+        function showRuntimeStatus(msg, ok = true) {
+            const pill = document.getElementById('runtime-status');
+            if (!pill) return;
+            pill.textContent = msg;
+            pill.style.display = 'inline-block';
+            pill.style.background = ok ? 'rgba(16,185,129,.12)' : 'rgba(239,68,68,.12)';
+            pill.style.borderColor = ok ? 'rgba(16,185,129,.25)' : 'rgba(239,68,68,.25)';
+            pill.style.color = ok ? '#10b981' : '#ef4444';
+            setTimeout(() => { pill.style.display = 'none'; }, 1800);
+        }
+
+        async function postRuntimeSettings() {
+            try {
+                const res = await fetch(RUNTIME_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        max_open_before_3pm: maxBefore,
+                        max_open_after_3pm: maxAfter
+                    })
+                });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                showRuntimeStatus('已保存 ✓', true);
+            } catch (e) {
+                console.error('Runtime POST error:', e);
+                showRuntimeStatus('保存失败', false);
+            }
+        }
+
+        function setupRuntimeControls() {
+            const ids = ['before-inc', 'before-dec', 'after-inc', 'after-dec', 'before-value', 'after-value'];
+            if (!ids.every(id => document.getElementById(id))) return; // 未插入控件则跳过
+
+            document.getElementById('before-inc').addEventListener('click', () => {
+                maxBefore = clamp(maxBefore + 1);
+                updateRuntimeControlsUI();
+                postRuntimeSettings();
+            });
+            document.getElementById('before-dec').addEventListener('click', () => {
+                maxBefore = clamp(maxBefore - 1);
+                updateRuntimeControlsUI();
+                postRuntimeSettings();
+            });
+            document.getElementById('after-inc').addEventListener('click', () => {
+                maxAfter = clamp(maxAfter + 1);
+                updateRuntimeControlsUI();
+                postRuntimeSettings();
+            });
+            document.getElementById('after-dec').addEventListener('click', () => {
+                maxAfter = clamp(maxAfter - 1);
+                updateRuntimeControlsUI();
+                postRuntimeSettings();
+            });
+
+            updateRuntimeControlsUI();
+        }
+        // === /Runtime controls (NEW) ===
+
+
         function initializeApp() {
             // Initialize webhook ID
             initializeWebhookId();
-            
+
             // Setup webhook ID input interface
             setupWebhookIdInput();
-            
+
+            // 新增：初始化顶部两个小按钮
+            setupRuntimeControls();
+
             // If we have a webhook ID, start fetching data
             if (webhookId) {
                 fetchData();
-                // Refresh every 30 seconds
                 setInterval(fetchData, 30000);
             }
-            
+
             // Setup refresh button
             document.getElementById('refresh-btn').addEventListener('click', fetchData);
         }
-        
+
+
         // Start the application when page loads
         initializeApp();
     </script>
 </body>
+
 </html>
