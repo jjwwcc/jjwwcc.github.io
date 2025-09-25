@@ -404,6 +404,62 @@
                 flex-wrap: wrap;
             }
         }
+
+        /* full width row for projected chart */
+        .full-span {
+            grid-column: 1 / -1;
+        }
+
+        #proj-container {
+            width: 100%;
+            height: 220px;
+            background: transparent;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* toggle switch for DD Stop */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+        }
+
+        .switch input {
+            display: none;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: rgba(255, 255, 255, .15);
+            border: 1px solid rgba(255, 255, 255, .2);
+            transition: .2s;
+            border-radius: 9999px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 2px;
+            top: 2px;
+            background: #e2e8f0;
+            transition: .2s;
+            border-radius: 9999px;
+        }
+
+        input:checked+.slider {
+            background: rgba(16, 185, 129, .25);
+            border-color: rgba(16, 185, 129, .45);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(16px);
+        }
     </style>
 </head>
 
@@ -431,6 +487,15 @@
                             <button id="after-inc" aria-label="Increase after 3pm">▶</button>
                         </div>
                     </div>
+
+                    <div class="rc">
+                        <span class="rc-label">DD&nbsp;Stop</span>
+                        <label class="switch" title="Toggle projected revenue drawdown stop">
+                            <input type="checkbox" id="dd-stop-toggle" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
 
                     <span id="runtime-status" class="runtime-status">Saved ✓</span>
                 </div>
@@ -467,6 +532,11 @@
                 <h2 class="panel-title">📈 Price Chart</h2>
                 <div id="chart-container"></div>
             </div>
+        </div>
+
+        <div class="chart-panel full-span">
+            <h2 class="panel-title">📉 Projected Revenue</h2>
+            <div id="proj-container"></div>
         </div>
 
         <div class="section positions-section" id="positions">
@@ -771,6 +841,17 @@
             const currentPrice = data.market_data.current_price || 346.72;
             const beforeCap = data.config_info?.max_open_before_3pm ?? null;
             const afterCap = data.config_info?.max_open_after_3pm ?? null;
+            // 从 bot 上报的数据里同步 runtime 控件显示（不 POST，防止抖动）
+            const botBefore = data.config_info?.max_open_before_3pm;
+            const botAfter = data.config_info?.max_open_after_3pm;
+            const botDD = data.config_info?.enable_projected_dd_stop;
+
+            let uiChanged = false;
+            if (Number.isFinite(botBefore) && botBefore !== maxBefore) { maxBefore = botBefore; uiChanged = true; }
+            if (Number.isFinite(botAfter) && botAfter !== maxAfter) { maxAfter = botAfter; uiChanged = true; }
+            if (typeof botDD === 'boolean' && botDD !== ddStopEnabled) { ddStopEnabled = botDD; uiChanged = true; }
+            if (uiChanged) updateRuntimeControlsUI();
+
             const entryPrices = data.positions
                 .filter(p => p.entry_price && p.is_open)
                 .map(p => p.entry_price);
@@ -799,8 +880,23 @@
                 { key: 'Positive Streak', value: data.strategy_info.positive_streak, color: 'neutral' },
                 { key: 'Cumulative Revenue ($)', value: data.strategy_info.cumulative_revenue_usd, color: data.strategy_info.cumulative_revenue_usd > 0 ? 'positive' : 'negative' },
                 { key: 'Total Unrealized PNL ($)', value: data.summary.total_unrealized_pnl, color: data.summary.total_unrealized_pnl > 0 ? 'positive' : data.summary.total_unrealized_pnl < 0 ? 'negative' : 'neutral' },
-                { key: 'Projected Revenue ($)', value: data.summary.projected_total_revenue, color: data.summary.projected_total_revenue > 0 ? 'positive' : 'negative' }
+                { key: 'Projected Revenue ($)', value: data.summary.projected_total_revenue, color: data.summary.projected_total_revenue > 0 ? 'positive' : 'negative' },
+                { key: 'DD Stop', value: ddStopEnabled ? 'On' : 'Off', color: ddStopEnabled ? 'positive' : 'neutral' },
             ];
+
+            // 初始化 Projected Revenue 图表
+            if (!projChart) {
+                if (!initProjChart()) return;
+            }
+
+            // 加点并渲染
+            const projSeq = addProjectedDataToSequence(data);
+            if (projSeries && projSeq.length > 0) {
+                projSeries.setData(projSeq);
+                updateProjStopLine(data);     // 依据 dd_stop/peak/dd_usd 画/更新阈值线
+                projChart.timeScale().fitContent();
+            }
+
 
             const grid = document.getElementById('metrics-grid');
             grid.innerHTML = '';
@@ -856,7 +952,15 @@
         const RUNTIME_URL = 'https://postget.me/ibcNDjBX2rnp/data/runtime'; // 固定目标
         let maxBefore = 2; // 初始值，可按需改
         let maxAfter = 1; // 初始值，可按需改
+        let ddStopEnabled = true; // DD 停止开关（会被 GET/runtime 或 bot 数据覆盖）
         const MIN_VAL = 0, MAX_VAL = 10;
+
+        // Projected revenue chart state (新增)
+        let projChart = null;
+        let projSeries = null;        // 投射利润曲线
+        let projStopSeries = null;    // 止损阈值水平线
+        let projDataSequence = [];
+        const MAX_PROJ_POINTS = 1200;
 
         const clamp = (n) => Math.max(MIN_VAL, Math.min(MAX_VAL, n));
 
@@ -865,7 +969,11 @@
             const av = document.getElementById('after-value');
             if (bv) bv.textContent = maxBefore;
             if (av) av.textContent = maxAfter;
+
+            const dd = document.getElementById('dd-stop-toggle');
+            if (dd) dd.checked = !!ddStopEnabled;
         }
+
 
         function showRuntimeStatus(msg, ok = true) {
             const pill = document.getElementById('runtime-status');
@@ -885,7 +993,8 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         max_open_before_3pm: maxBefore,
-                        max_open_after_3pm: maxAfter
+                        max_open_after_3pm: maxAfter,
+                        enable_dd_stop: !!ddStopEnabled   // 新增
                     })
                 });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -896,38 +1005,151 @@
             }
         }
 
+        async function loadRuntimeSettings() {
+            try {
+                const res = await fetch(RUNTIME_URL, { method: 'GET' });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                let cfg = await res.json().catch(() => null);
+
+                // 有些后端可能返回纯文本或简陋 JSON，这里尽量宽松解析
+                if (cfg && typeof cfg === 'object') {
+                    const b = cfg.max_open_before_3pm ?? cfg.before ?? null;
+                    const a = cfg.max_open_after_3pm ?? cfg.after ?? null;
+                    const d = (cfg.enable_dd_stop ?? cfg.dd_stop ?? null);
+
+                    if (Number.isFinite(b)) maxBefore = Math.max(MIN_VAL, Math.min(MAX_VAL, b));
+                    if (Number.isFinite(a)) maxAfter = Math.max(MIN_VAL, Math.min(MAX_VAL, a));
+                    if (d !== null) ddStopEnabled = (String(d).trim().toLowerCase() === 'true' || d === 1 || d === true || d === 'on' || d === 'yes');
+
+                    updateRuntimeControlsUI();
+                    showRuntimeStatus('Loaded ✓', true);
+                }
+            } catch (e) {
+                console.warn('Runtime GET error:', e);
+                // 失败就保持默认值，由 webhook 数据校正
+            }
+        }
+
+        function initProjChart() {
+            const container = document.getElementById('proj-container');
+            if (!window.LightweightCharts) {
+                document.getElementById('error-message').textContent = 'Error: Lightweight Charts not loaded.';
+                return false;
+            }
+            if (projChart) { projChart.remove(); projChart = null; projSeries = null; projStopSeries = null; }
+
+            try {
+                projChart = LightweightCharts.createChart(container, {
+                    layout: { background: { color: 'transparent' }, textColor: '#e2e8f0' },
+                    grid: {
+                        vertLines: { color: 'rgba(255,255,255,0.1)' },
+                        horzLines: { color: 'rgba(255,255,255,0.1)' }
+                    },
+                    rightPriceScale: { borderColor: 'rgba(255,255,255,0.1)' },
+                    timeScale: { borderColor: 'rgba(255,255,255,0.1)', timeVisible: true, secondsVisible: false }
+                });
+
+                projSeries = projChart.addLineSeries({ lineWidth: 2 });
+                // 止损阈值水平线用单独的线（每次更新重置）
+                return true;
+            } catch (e) {
+                console.error('Proj chart init error:', e);
+                document.getElementById('error-message').textContent = `Proj chart error: ${e.message}`;
+                return false;
+            }
+        }
+
+        function addProjectedDataToSequence(data) {
+            const nowSec = Math.floor(Date.now() / 1000);
+            const proj = data.summary?.projected_total_revenue;
+            if (!Number.isFinite(proj)) return projDataSequence;
+
+            const last = projDataSequence[projDataSequence.length - 1];
+            if (last && last.time === nowSec) {
+                last.value = proj;
+            } else {
+                projDataSequence.push({ time: nowSec, value: proj });
+            }
+            if (projDataSequence.length > MAX_PROJ_POINTS) {
+                projDataSequence = projDataSequence.slice(-MAX_PROJ_POINTS);
+            }
+            return projDataSequence;
+        }
+
+        function updateProjStopLine(data) {
+            if (!projChart || !projSeries) return;
+
+            // 先清除旧的阈值线
+            if (projStopSeries) {
+                projChart.removeSeries(projStopSeries);
+                projStopSeries = null;
+            }
+
+            const ddEnabled = !!(data.config_info?.enable_projected_dd_stop);
+            const peak = data.summary?.projected_peak_since_anchor;
+            const ddUsd = data.config_info?.projected_drawdown_usd;
+
+            if (!ddEnabled || !Number.isFinite(peak) || !Number.isFinite(ddUsd)) {
+                return; // 不画阈值线
+            }
+
+            const stopVal = peak - ddUsd;
+            // 用一条水平的 line series 画出阈值线（覆盖全时段）
+            projStopSeries = projChart.addLineSeries({
+                lineWidth: 2,
+                lineStyle: LightweightCharts.LineStyle.Dashed
+            });
+
+            const d = projSeries.data();
+            if (d.length > 0) {
+                projStopSeries.setData([
+                    { time: d[0].time, value: stopVal },
+                    { time: d[d.length - 1].time, value: stopVal }
+                ]);
+            }
+        }
+
+
         function setupRuntimeControls() {
-            const ids = ['before-inc', 'before-dec', 'after-inc', 'after-dec', 'before-value', 'after-value'];
-            if (!ids.every(id => document.getElementById(id))) return; // 未插入控件则跳过
+            const ids = ['before-inc', 'before-dec', 'after-inc', 'after-dec', 'before-value', 'after-value', 'dd-stop-toggle'];
+            if (!ids.every(id => document.getElementById(id))) return;
 
             document.getElementById('before-inc').addEventListener('click', () => {
-                maxBefore = clamp(maxBefore + 1);
+                maxBefore = Math.max(MIN_VAL, Math.min(MAX_VAL, maxBefore + 1));
                 updateRuntimeControlsUI();
                 postRuntimeSettings();
             });
             document.getElementById('before-dec').addEventListener('click', () => {
-                maxBefore = clamp(maxBefore - 1);
+                maxBefore = Math.max(MIN_VAL, Math.min(MAX_VAL, maxBefore - 1));
                 updateRuntimeControlsUI();
                 postRuntimeSettings();
             });
             document.getElementById('after-inc').addEventListener('click', () => {
-                maxAfter = clamp(maxAfter + 1);
+                maxAfter = Math.max(MIN_VAL, Math.min(MAX_VAL, maxAfter + 1));
                 updateRuntimeControlsUI();
                 postRuntimeSettings();
             });
             document.getElementById('after-dec').addEventListener('click', () => {
-                maxAfter = clamp(maxAfter - 1);
+                maxAfter = Math.max(MIN_VAL, Math.min(MAX_VAL, maxAfter - 1));
+                updateRuntimeControlsUI();
+                postRuntimeSettings();
+            });
+
+            // 新增：DD Stop toggle
+            document.getElementById('dd-stop-toggle').addEventListener('change', (e) => {
+                ddStopEnabled = !!e.target.checked;
                 updateRuntimeControlsUI();
                 postRuntimeSettings();
             });
 
             updateRuntimeControlsUI();
         }
+
         // === /Runtime controls (NEW) ===
 
 
         function initializeApp() {
-            // Initialize webhook ID
+            // Initialize webhook IDrenderData
             initializeWebhookId();
 
             // Setup webhook ID input interface
@@ -935,6 +1157,9 @@
 
             // 新增：初始化顶部两个小按钮
             setupRuntimeControls();
+            // 拉取一次 runtime，初始化 UI
+            loadRuntimeSettings();
+
 
             // If we have a webhook ID, start fetching data
             if (webhookId) {
