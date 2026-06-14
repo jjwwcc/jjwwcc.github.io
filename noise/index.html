@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#05070c" />
+  <title>实时声音波形</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    :root {
+      --accent: #7b69ff;
+      --accent-2: #43c8ff;
+      --status: #8ea0c9;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #05070c;
+      color: #f5f7fb;
+      font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      position: relative;
+      cursor: pointer;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(34, 52, 88, 0.16), transparent 50%),
+        #05070c;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .hud {
+      position: fixed;
+      top: max(20px, env(safe-area-inset-top));
+      right: max(20px, env(safe-area-inset-right));
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px 12px 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 22px;
+      background: rgba(8, 11, 18, 0.62);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.28);
+      pointer-events: none;
+    }
+
+    .dial {
+      --angle: 0deg;
+      position: relative;
+      width: 92px;
+      height: 92px;
+      flex: 0 0 92px;
+      border-radius: 50%;
+      background:
+        conic-gradient(
+          from 225deg,
+          #65e6a7 0deg 72deg,
+          #63c8ff 72deg 126deg,
+          #f4d35e 126deg 180deg,
+          #ff9f43 180deg 225deg,
+          #ff667d 225deg 270deg,
+          rgba(255,255,255,0.07) 270deg 360deg
+        );
+      box-shadow:
+        inset 0 0 20px rgba(255,255,255,0.04),
+        0 0 24px rgba(95, 91, 255, 0.16);
+    }
+
+    .dial::before {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border-radius: 50%;
+      background: rgba(7, 10, 16, 0.96);
+      box-shadow: inset 0 0 16px rgba(255,255,255,0.025);
+    }
+
+    .dial-mask {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background:
+        conic-gradient(
+          from 225deg,
+          transparent 0 var(--angle),
+          rgba(5,7,12,0.88) var(--angle) 270deg,
+          transparent 270deg 360deg
+        );
+    }
+
+    .dial-center {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      z-index: 2;
+    }
+
+    .dial-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--status);
+      box-shadow: 0 0 16px var(--status);
+    }
+
+    .readout {
+      min-width: 92px;
+      text-align: right;
+    }
+
+    .value {
+      font-size: 38px;
+      line-height: 1;
+      font-weight: 730;
+      letter-spacing: -0.055em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .unit {
+      margin-left: 4px;
+      color: #7f8ba5;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+
+    .status {
+      margin-top: 9px;
+      color: var(--status);
+      font-size: 12px;
+      font-weight: 650;
+      letter-spacing: 0.08em;
+      transition: color 0.25s ease;
+    }
+
+    .hint {
+      position: fixed;
+      left: 50%;
+      bottom: max(22px, env(safe-area-inset-bottom));
+      z-index: 2;
+      transform: translateX(-50%);
+      color: rgba(220, 226, 240, 0.48);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .running .hint {
+      opacity: 0;
+    }
+
+    @media (max-width: 560px) {
+      .hud {
+        top: max(14px, env(safe-area-inset-top));
+        right: max(14px, env(safe-area-inset-right));
+        gap: 10px;
+        padding: 10px 12px 10px 10px;
+        border-radius: 18px;
+      }
+
+      .dial {
+        width: 74px;
+        height: 74px;
+        flex-basis: 74px;
+      }
+
+      .value {
+        font-size: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="scope"></canvas>
+
+  <aside class="hud">
+    <div id="dial" class="dial" aria-hidden="true">
+      <div class="dial-mask"></div>
+      <div class="dial-center">
+        <div class="dial-dot"></div>
+      </div>
+    </div>
+
+    <div class="readout">
+      <div>
+        <span id="value" class="value">--</span>
+        <span class="unit">dB</span>
+      </div>
+      <div id="status" class="status">点击开始</div>
+    </div>
+  </aside>
+
+  <div class="hint">点击屏幕开始 / 停止</div>
+
+  <script>
+    const canvas = document.getElementById("scope");
+    const ctx = canvas.getContext("2d");
+    const valueEl = document.getElementById("value");
+    const statusEl = document.getElementById("status");
+    const dialEl = document.getElementById("dial");
+
+    let stream = null;
+    let audioContext = null;
+    let source = null;
+    let analyser = null;
+    let animationFrame = null;
+    let running = false;
+
+    let waveform = null;
+    let smoothedDb = 30;
+
+    const monitorState = {
+      sampleRate: 0,
+      fftSize: 4096,
+      lastWaveform: null,
+      lastRms: 0,
+      lastEstimatedDb: 0
+    };
+
+    function resizeCanvas() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(innerWidth * dpr);
+      canvas.height = Math.round(innerHeight * dpr);
+      canvas.style.width = `${innerWidth}px`;
+      canvas.style.height = `${innerHeight}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      drawIdle();
+    }
+
+    function getStatus(db) {
+      if (db < 45) return ["安静", "#65e6a7"];
+      if (db < 65) return ["正常", "#63c8ff"];
+      if (db < 80) return ["较嘈杂", "#f4d35e"];
+      if (db < 95) return ["很吵", "#ff9f43"];
+      return ["注意听力", "#ff667d"];
+    }
+
+    function updateDial(db, color) {
+      const normalized = Math.max(0, Math.min(1, (db - 30) / 90));
+      dialEl.style.setProperty("--angle", `${normalized * 270}deg`);
+      document.documentElement.style.setProperty("--status", color);
+    }
+
+    function drawBackground(width, height) {
+      ctx.clearRect(0, 0, width, height);
+
+      const gradient = ctx.createLinearGradient(0, 0, 0, height);
+      gradient.addColorStop(0, "#070a11");
+      gradient.addColorStop(1, "#04060a");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.strokeStyle = "rgba(255,255,255,0.03)";
+      ctx.lineWidth = 1;
+
+      const horizontalStep = Math.max(70, height / 8);
+      for (let y = horizontalStep; y < height; y += horizontalStep) {
+        ctx.beginPath();
+        ctx.moveTo(0, Math.round(y) + 0.5);
+        ctx.lineTo(width, Math.round(y) + 0.5);
+        ctx.stroke();
+      }
+
+      const verticalStep = Math.max(90, width / 12);
+      for (let x = verticalStep; x < width; x += verticalStep) {
+        ctx.beginPath();
+        ctx.moveTo(Math.round(x) + 0.5, 0);
+        ctx.lineTo(Math.round(x) + 0.5, height);
+        ctx.stroke();
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(0, height / 2 + 0.5);
+      ctx.lineTo(width, height / 2 + 0.5);
+      ctx.strokeStyle = "rgba(255,255,255,0.08)";
+      ctx.stroke();
+    }
+
+    function drawIdle() {
+      if (running) return;
+
+      const width = innerWidth;
+      const height = innerHeight;
+
+      drawBackground(width, height);
+
+      ctx.beginPath();
+      ctx.moveTo(0, height / 2);
+      ctx.lineTo(width, height / 2);
+      ctx.strokeStyle = "rgba(108, 155, 255, 0.24)";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      updateDial(30, "#8ea0c9");
+    }
+
+    function drawWaveform(samples, rms) {
+      const width = innerWidth;
+      const height = innerHeight;
+      const centerY = height / 2;
+
+      drawBackground(width, height);
+
+      const gain = Math.min(8, Math.max(1.15, 0.22 / Math.max(rms, 0.0001)));
+      const visibleAmplitude = height * 0.42;
+
+      const glow = ctx.createLinearGradient(0, 0, width, 0);
+      glow.addColorStop(0, "rgba(62, 194, 255, 0.18)");
+      glow.addColorStop(0.5, "rgba(123, 105, 255, 0.98)");
+      glow.addColorStop(1, "rgba(62, 194, 255, 0.18)");
+
+      ctx.beginPath();
+
+      const step = samples.length / width;
+      for (let x = 0; x < width; x++) {
+        const sampleIndex = Math.min(samples.length - 1, Math.floor(x * step));
+        const sample = samples[sampleIndex];
+        const y = centerY + sample * visibleAmplitude * gain;
+
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+
+      ctx.strokeStyle = glow;
+      ctx.lineWidth = 2;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.shadowBlur = 18;
+      ctx.shadowColor = "rgba(104, 93, 255, 0.55)";
+      ctx.stroke();
+
+      ctx.shadowBlur = 0;
+    }
+
+    function calculateRms(samples) {
+      let sumSquares = 0;
+      for (let i = 0; i < samples.length; i++) {
+        sumSquares += samples[i] * samples[i];
+      }
+      return Math.sqrt(sumSquares / samples.length);
+    }
+
+    function estimateDb(rms) {
+      if (rms <= 0) return 30;
+      return 20 * Math.log10(rms) + 100;
+    }
+
+    function render() {
+      analyser.getFloatTimeDomainData(waveform);
+
+      const rms = calculateRms(waveform);
+      const estimatedDb = estimateDb(rms);
+      smoothedDb = smoothedDb * 0.82 + estimatedDb * 0.18;
+
+      const displayDb = Math.max(30, Math.min(120, smoothedDb));
+      const [label, color] = getStatus(displayDb);
+
+      valueEl.textContent = Math.round(displayDb);
+      statusEl.textContent = label;
+      statusEl.style.color = color;
+      updateDial(displayDb, color);
+
+      monitorState.lastWaveform = new Float32Array(waveform);
+      monitorState.lastRms = rms;
+      monitorState.lastEstimatedDb = displayDb;
+
+      drawWaveform(waveform, rms);
+      animationFrame = requestAnimationFrame(render);
+    }
+
+    async function start() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: false,
+            noiseSuppression: false,
+            autoGainControl: false,
+            channelCount: 1
+          }
+        });
+
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = monitorState.fftSize;
+        analyser.smoothingTimeConstant = 0;
+
+        source = audioContext.createMediaStreamSource(stream);
+        source.connect(analyser);
+
+        waveform = new Float32Array(analyser.fftSize);
+        monitorState.sampleRate = audioContext.sampleRate;
+
+        running = true;
+        document.body.classList.add("running");
+        render();
+      } catch (error) {
+        statusEl.textContent = "麦克风不可用";
+        statusEl.style.color = "#ff667d";
+        updateDial(30, "#ff667d");
+      }
+    }
+
+    function stop() {
+      cancelAnimationFrame(animationFrame);
+
+      if (source) source.disconnect();
+      if (stream) stream.getTracks().forEach(track => track.stop());
+      if (audioContext && audioContext.state !== "closed") audioContext.close();
+
+      stream = null;
+      source = null;
+      analyser = null;
+      audioContext = null;
+      waveform = null;
+      running = false;
+      smoothedDb = 30;
+
+      valueEl.textContent = "--";
+      statusEl.textContent = "点击开始";
+      statusEl.style.color = "#8ea0c9";
+      document.body.classList.remove("running");
+      drawIdle();
+    }
+
+    document.body.addEventListener("click", () => {
+      running ? stop() : start();
+    });
+
+    window.addEventListener("resize", resizeCanvas);
+
+    window.noiseMonitor = {
+      getState() {
+        return {
+          sampleRate: monitorState.sampleRate,
+          fftSize: monitorState.fftSize,
+          waveform: monitorState.lastWaveform
+            ? new Float32Array(monitorState.lastWaveform)
+            : null,
+          rms: monitorState.lastRms,
+          estimatedDb: monitorState.lastEstimatedDb
+        };
+      }
+    };
+
+    resizeCanvas();
+  </script>
+</body>
+</html>
