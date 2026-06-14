@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#05070c" />
-  <title>实时声音波形</title>
+  <title>-- dB · 点击开始｜实时声音波形</title>
   <style>
     * { box-sizing: border-box; }
 
@@ -214,6 +214,11 @@
     const valueEl = document.getElementById("value");
     const statusEl = document.getElementById("status");
     const dialEl = document.getElementById("dial");
+    const baseTitle = "实时声音波形";
+
+    function updatePageTitle(dbText, statusText) {
+      document.title = `${dbText} dB · ${statusText}｜${baseTitle}`;
+    }
 
     let stream = null;
     let audioContext = null;
@@ -374,6 +379,7 @@
       valueEl.textContent = Math.round(displayDb);
       statusEl.textContent = label;
       statusEl.style.color = color;
+      updatePageTitle(Math.round(displayDb), label);
       updateDial(displayDb, color);
 
       monitorState.lastWaveform = new Float32Array(waveform);
@@ -412,6 +418,7 @@
       } catch (error) {
         statusEl.textContent = "麦克风不可用";
         statusEl.style.color = "#ff667d";
+        updatePageTitle("--", "麦克风不可用");
         updateDial(30, "#ff667d");
       }
     }
@@ -434,6 +441,7 @@
       valueEl.textContent = "--";
       statusEl.textContent = "点击开始";
       statusEl.style.color = "#8ea0c9";
+      updatePageTitle("--", "点击开始");
       document.body.classList.remove("running");
       drawIdle();
     }
@@ -458,6 +466,7 @@
       }
     };
 
+    updatePageTitle("--", "点击开始");
     resizeCanvas();
   </script>
 </body>
